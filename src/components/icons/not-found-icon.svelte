@@ -1,3 +1,20 @@
+<script>
+    /*
+    Pictogrammers Free License
+    --------------------------
+
+    Last Updated: February 1st, 2023
+
+    This package is released as free, open-source, and GPL friendly by
+    the [Pictogrammers](https://pictogrammers.com/). You may use it
+    for commercial projects, open-source projects, or anything really.
+
+    # Icons: Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+    Some of the icons are redistributed under the Apache 2.0 license. All other
+    icons are either redistributed under their respective licenses or are
+    distributed under the Apache 2.0 license.
+     */
+</script>
 
 <svg class="not-found-icon"
      xmlns="http://www.w3.org/2000/svg"

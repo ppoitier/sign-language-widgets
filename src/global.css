@@ -2,6 +2,9 @@
 
 :root {
     font-size: 62.5%;
+
+    --mosi-tag-color: #2c3e50;
+    --mosi-active-tag-color: #3d5671;
 }
 
 * {
