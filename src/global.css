@@ -11,6 +11,8 @@
 
     --card-min-width: 24rem;
     --card-max-width: 48rem;
+
+    --progress-bar-color: rgba(1, 178, 175, 1.0);
 }
 
 * {

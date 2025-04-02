@@ -6,8 +6,20 @@
     import {onMount} from 'svelte'
     import {error_store} from '../../stores/error-store.js'
 
+    /**
+     * @import { Snippet } from 'svelte'
+     * @typedef {Object} WebcamProps
+     * @property {Snippet} [overlay_icon] - Optional snippet to render an icon in the webcam overlay.
+     * @property {Snippet} [overlay_content] - Optional snippet with HTML content in the webcam overlay.
+     */
+
+    /**
+     * @type {WebcamProps}
+     */
+    let {overlay_icon, overlay_content} = $props()
+
     let video_elem
-    let stream
+    let stream = $state(null)
     let media_state = $state('loading')
 
     /**
@@ -58,6 +70,9 @@
             {#snippet icon()}
                 <LoadingIcon/>
             {/snippet}
+            {#snippet content()}
+                <h3>Chargement de la webcam...</h3>
+            {/snippet}
         </VideoOverlay>
     {:else if media_state === 'error'}
         <VideoOverlay>
@@ -68,6 +83,17 @@
                 <h3>Video non disponible !</h3>
             {/snippet}
         </VideoOverlay>
+    {:else}
+        {#if overlay_icon || overlay_content}
+            <VideoOverlay>
+                {#snippet icon()}
+                    {@render overlay_icon?.()}
+                {/snippet}
+                {#snippet content()}
+                    {@render overlay_content?.()}
+                {/snippet}
+            </VideoOverlay>
+        {/if}
     {/if}
 </div>
 
@@ -83,5 +109,10 @@
         background-color: black;
         isolation: isolate;
         z-index: 0;
+    }
+
+    .video-container video {
+        width: 100%;
+        height: 100%;
     }
 </style>

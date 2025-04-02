@@ -1,11 +1,9 @@
 <script>
-    import SignGrid from "./components/signs/sign-grid.svelte"
-    import SignList from "./components/signs/sign-list.svelte"
+    import SignRecording from "./components/sign-recording.svelte"
 </script>
 
 <main>
-<!--    <SignGrid />-->
-    <SignList/>
+    <SignRecording />
 </main>
 
 <style>

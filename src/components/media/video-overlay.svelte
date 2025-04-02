@@ -33,8 +33,7 @@
         inset: 0;
         display: grid;
         place-items: center;
-        background-color: rgba(0, 0, 0, 0.5);
-        pointer-events: none;
+        background-color: rgba(0, 0, 0, 0.7);
         user-select: none;
         z-index: 100;
     }
