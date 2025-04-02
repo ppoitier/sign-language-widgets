@@ -83,7 +83,6 @@
         flex-wrap: wrap;
         gap: .4em;
         padding: .2em .5em;
-        border: 1px solid black;
     }
 
     .add-tag-button {
@@ -91,11 +90,11 @@
         display: grid;
         place-items: center;
         font-size: 1.6em;
-        color: var(--mosi-tag-color);
+        color: var(--tag-color);
     }
 
     .add-tag-button:hover, .add-tag-button:active {
-        color: var(--mosi-active-tag-color);
+        color: var(--active-tag-color);
     }
 
     .add-tag-button:focus-visible {

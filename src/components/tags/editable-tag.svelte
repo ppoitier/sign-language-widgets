@@ -140,7 +140,7 @@
         display: inline-block;
         padding: .2em .6em;
         border-radius: 0.4em;
-        background-color: var(--mosi-tag-color);
+        background-color: var(--tag-color);
         color: white;
         cursor: pointer;
         user-select: none;
@@ -149,7 +149,7 @@
 
     .tag:hover,
     .tag:focus {
-        background-color: var(--mosi-active-tag-color);
+        background-color: var(--active-tag-color);
         outline: none; /* Remove default focus outline */
     }
 
@@ -161,13 +161,11 @@
         display: inline-block;
         padding: calc(.2em - 1px) calc(.6em - 1px);
         border-radius: 0.4em;
-        border: 1px solid var(--mosi-active-tag-color);
+        border: 1px solid var(--active-tag-color);
         font: inherit;
         line-height: inherit;
         background-color: white;
         color: black;
         min-width: 5ch;
     }
-
-    .tag-input:focus-visible {}
 </style>

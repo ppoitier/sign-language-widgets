@@ -1,10 +1,10 @@
 <script>
     import VideoOverlay from './video-overlay.svelte'
-    import NotFoundIcon from './icons/not-found-icon.svelte'
-    import LoadingIcon from './icons/loading-icon.svelte'
+    import NotFoundIcon from '../icons/not-found-icon.svelte'
+    import LoadingIcon from '../icons/loading-icon.svelte'
 
     import {onMount} from 'svelte'
-    import {error_store} from '../stores/error-store.js'
+    import {error_store} from '../../stores/error-store.js'
 
     let video_elem
     let stream

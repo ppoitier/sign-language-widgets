@@ -3,8 +3,14 @@
 :root {
     font-size: 62.5%;
 
-    --mosi-tag-color: #2c3e50;
-    --mosi-active-tag-color: #3d5671;
+    --tag-color: #2c3e50;
+    --active-tag-color: #3d5671;
+
+    --card-border: #8c8c8c;
+    --card-background: #f4f0f0;
+
+    --card-min-width: 24rem;
+    --card-max-width: 48rem;
 }
 
 * {

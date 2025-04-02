@@ -5,10 +5,10 @@
     import videojs from 'video.js'
 
     import VideoOverlay from './video-overlay.svelte'
-    import LoadingIcon from './icons/loading-icon.svelte'
-    import NotFoundIcon from './icons/not-found-icon.svelte'
+    import LoadingIcon from '../icons/loading-icon.svelte'
+    import NotFoundIcon from '../icons/not-found-icon.svelte'
 
-    let {url, mime_type = 'video/mp4'} = $props()
+    let {url, mime_type} = $props()
 
     let video_elem
     let video_player

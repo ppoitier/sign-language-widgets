@@ -9,7 +9,7 @@
         display: inline-block;
         padding: .2em .6em;
         border-radius: 0.4em;
-        background-color: var(--mosi-tag-color);
+        background-color: var(--tag-color);
         color: white;
     }
 </style>
