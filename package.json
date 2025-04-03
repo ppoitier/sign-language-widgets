@@ -1,6 +1,6 @@
 {
   "name": "sign-language-widgets",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "files": [
     "src",
@@ -21,12 +21,12 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "svelte": "^5.20.2"
+    "svelte": "^5.25.6"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "svelte": "^5.20.2",
-    "vite": "^6.2.0"
+    "svelte": "^5.25.6",
+    "vite": "^6.2.4"
   },
   "dependencies": {
     "video.js": "^8.22.0"

@@ -1,9 +1,9 @@
 <script>
-    import SignRecording from "./components/sign-recording.svelte"
+    import SignGroup from './components/signs/sign-group.svelte'
 </script>
 
 <main>
-    <SignRecording />
+    <SignGroup/>
 </main>
 
 <style>

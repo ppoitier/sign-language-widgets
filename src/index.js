@@ -10,6 +10,7 @@ export {default as SignCard} from './components/signs/sign-card.svelte'
 export {default as SignGrid} from './components/signs/sign-grid.svelte'
 export {default as SignListItem} from './components/signs/sign-list-item.svelte'
 export {default as SignList} from './components/signs/sign-list.svelte'
+export {default as SignGroup} from './components/signs/sign-group.svelte'
 
 export {default as Tag} from './components/tags/tag.svelte'
 export {default as EditableTag} from './components/tags/editable-tag.svelte'
