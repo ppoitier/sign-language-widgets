@@ -1,12 +1,27 @@
 {
   "name": "sign-language-widgets",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "files": [
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "svelte": "./src/index.js"
+    },
+    "./package.json": "./package.json",
+    "./global.css": "./src/global.css"
+  },
+  "svelte": "./src/index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "svelte": "^5.20.2"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",

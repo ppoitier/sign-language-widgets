@@ -1,7 +1,7 @@
 <script>
-    import Webcam from './media/webcam.svelte'
-    import Video from './media/video.svelte';
-    import VideoProgressBar from './media/video-progress-bar.svelte'
+    import Webcam from '../media/webcam.svelte'
+    import Video from '../media/video.svelte';
+    import VideoProgressBar from '../media/video-progress-bar.svelte'
     import Timer from './timer.svelte';
 
     let current_state = $state('waiting')
