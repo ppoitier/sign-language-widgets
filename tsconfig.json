@@ -1,0 +1,31 @@
+// tsconfig.json in 'my-svelte-lib'
+{
+  "compilerOptions": {
+    // --- Core settings for generating .d.ts from JSDoc ---
+    "allowJs": true,             // Allow JavaScript files to be compiled (or processed for types)
+    "declaration": true,         // Generate corresponding '.d.ts' files.
+    "emitDeclarationOnly": true, // Only emit '.d.ts' files; don't generate '.js' files.
+
+    // --- Output ---
+    "outDir": "./dist/types",     // Or just "./types", or "./dist" - specify where .d.ts files go
+
+    // --- Module System ---
+    "module": "ESNext",          // Use modern module system
+    "moduleResolution": "bundler", // Or "node", modern resolution often works best with bundlers like Vite
+    "target": "ESNext",          // Target modern JavaScript
+
+    // --- Optional but Recommended ---
+    "checkJs": true,             // Report errors in .js files based on JSDoc. Helps catch issues.
+    "strict": true,             // (Disabled) Enable all strict type-checking options (good practice)
+    "skipLibCheck": true,        // Skip type checking of declaration files (speeds up compilation)
+    "forceConsistentCasingInFileNames": true,
+
+    // --- Svelte specific (if needed, often handled by svelte-check separately) ---
+    // "jsx": "preserve",
+    // "jsxImportSource": "svelte",
+  },
+  // --- Specify which files to include ---
+  "include": ["src/**/*"],       // Adjust if your source code is elsewhere (e.g., "lib/**/*")
+  // --- Specify which files to exclude ---
+  "exclude": ["node_modules", "dist"] // Exclude build output and node_modules
+}

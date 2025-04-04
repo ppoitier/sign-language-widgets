@@ -3,14 +3,23 @@
 :root {
     font-size: 62.5%;
 
+    --focus-visible-color: red;
+
     --tag-color: #2c3e50;
     --active-tag-color: #3d5671;
+
+    --button-color: #2c3e50;
+    --active-button-color: #3d5671;
 
     --card-border: #8c8c8c;
     --card-background: #f4f0f0;
 
     --card-min-width: 24rem;
     --card-max-width: 48rem;
+
+    --min-lexicon-card-width: 20rem;
+    --max-lexicon-card-width: 32rem;
+    --min-lexicon-card-height: 20rem;
 
     --progress-bar-color: rgba(1, 178, 175, 1.0);
 }
