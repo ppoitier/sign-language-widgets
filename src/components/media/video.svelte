@@ -8,7 +8,7 @@
     import LoadingIcon from '../icons/loading-icon.svelte'
     import NotFoundIcon from '../icons/not-found-icon.svelte'
 
-    let {url, mime_type} = $props()
+    let {url, mime_type, autoplay=true, loop=true} = $props()
 
     let video_elem
     let video_player
@@ -21,8 +21,8 @@
 
         video_player = videojs(video_elem, {
             preload: 'metadata',
-            autoplay: false,
-            loop: false,
+            autoplay: autoplay,
+            loop: loop,
             controls: true,
             playbackRates: [0.25, 0.5, 1, 2],
             fluid: false,
@@ -76,5 +76,19 @@
         background-color: black;
         isolation: isolate;
         z-index: 0;
+    }
+
+    .video-js :global(.vjs-control-bar) {
+        /* Hide the control bar by default */
+        opacity: 0;
+        visibility: hidden;
+
+        /* Keep the smooth transition effect */
+        transition: visibility 0.1s, opacity 0.1s;
+    }
+
+    .video-js:hover :global(.vjs-control-bar) {
+        opacity: 1;
+        visibility: visible;
     }
 </style>

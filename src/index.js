@@ -16,3 +16,10 @@ export {default as Tag} from './components/tags/tag.svelte'
 export {default as EditableTag} from './components/tags/editable-tag.svelte'
 export {default as TagList} from './components/tags/tag-list.svelte'
 
+export {default as IconButton} from './components/interaction/icon-button.svelte'
+export {default as AddIcon} from './components/icons/add-icon.svelte'
+export {default as GridIcon} from './components/icons/grid-icon.svelte'
+export {default as ListIcon} from './components/icons/list-icon.svelte'
+export {default as LoadingIcon} from './components/icons/loading-icon.svelte'
+export {default as NotFoundIcon} from './components/icons/not-found-icon.svelte'
+
