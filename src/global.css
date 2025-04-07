@@ -22,6 +22,9 @@
     --min-lexicon-card-height: 20rem;
 
     --progress-bar-color: rgba(1, 178, 175, 1.0);
+
+    --field-border: #bdbdbd;
+    --field-background: #f1f1f1;
 }
 
 * {
