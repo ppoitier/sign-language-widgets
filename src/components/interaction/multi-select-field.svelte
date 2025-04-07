@@ -11,7 +11,7 @@
      */
     let {options = $bindable(), default_text = 'All', id = 'multi-select', search_placeholder = 'Search entry...'} = $props()
 
-    let opened = $state(true)
+    let opened = $state(false)
     let search = $state('')
     let all_selected = $derived(options.every(o => o.selected))
     let filtered_options = $derived(options.filter(o => o.name.toLowerCase().includes(search.toLowerCase())))
@@ -61,10 +61,9 @@
         display: flex;
         height: 100%;
         background: var(--field-background);
-        border: .09em solid var(--field-border);
+        border: var(--field-border);
         border-radius: .25em;
         isolation: isolate;
-        z-index: 100;
         overflow: hidden;
     }
 
@@ -77,7 +76,7 @@
     }
 
     .multi-select_option:nth-child(n + 3) {
-        border-top: .1em solid var(--field-border);
+        border-top: var(--field-border);
     }
 
     .multi-select_search {
@@ -93,12 +92,12 @@
         display: inline-flex;
         align-items: center;
         padding: 0 .2em;
-        border-left: .09em solid var(--field-border);
+        border-left: var(--field-border);
         font-size: 1.2em;
     }
 
     .multi-select_icon:hover, .multi-select_icon:active {
-        background: var(--field-border);
+        background: var(--field-active-background);
     }
 
     .multi-select_options {
@@ -108,12 +107,11 @@
         width: 100%;
         padding: .4rem 0;
         background: var(--field-background);
-        border: .09em solid var(--field-border);
+        border: var(--field-border);
         border-top: none;
         border-bottom-right-radius: .25em;
         border-bottom-left-radius: .25em;
-        z-index: 0;
-        overflow: hidden;
+        z-index: 1000;
         transform-origin: top;
         transform: scaleY(0);
         opacity: 0;
