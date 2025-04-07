@@ -22,4 +22,7 @@ export {default as GridIcon} from './components/icons/grid-icon.svelte'
 export {default as ListIcon} from './components/icons/list-icon.svelte'
 export {default as LoadingIcon} from './components/icons/loading-icon.svelte'
 export {default as NotFoundIcon} from './components/icons/not-found-icon.svelte'
+export {default as CheckboxListIcon} from './components/icons/checkbox-list-icon.svelte'
+
+export {default as MultiSelectField} from './components/interaction/multi-select-field.svelte'
 
