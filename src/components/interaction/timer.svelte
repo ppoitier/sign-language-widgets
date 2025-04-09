@@ -1,5 +1,5 @@
 <script>
-    let {duration, onFinished} = $props()
+    let {duration, onFinished = () => {}} = $props()
     let remaining_time = $state(0)
 
     $effect(() => {

@@ -1,5 +1,5 @@
 <script>
-    let {duration, onFinished} = $props()
+    let {duration, onFinished = () => {}} = $props()
 
     $effect(() => {
         const timeout_id = setTimeout(onFinished, duration * 1000)

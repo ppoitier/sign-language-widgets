@@ -8,10 +8,22 @@
     import LoadingIcon from '../icons/loading-icon.svelte'
     import NotFoundIcon from '../icons/not-found-icon.svelte'
 
-    let {url, mime_type, autoplay=true, loop=true} = $props()
+    /**
+     * @typedef {Object} VideoProps
+     * @property {string} url - The URL of the video.
+     * @property {string} mime_type - MIME type of the video.
+     * @property {boolean} [fluid=false] - If true, fill the parent container.
+     * @property {boolean} [autoplay=true] - If true, play the video when loading.
+     * @property {boolean} [loop=true] - If true, loop the playback of the video.
+     */
 
+    /** @type{VideoProps} */
+    let {url, mime_type, fluid=false, autoplay=true, loop=true} = $props()
+
+    /** @type {HTMLVideoElement} */
     let video_elem
     let video_player
+    /** @type {string} */
     let media_state = $state('loading')
 
     onMount(() => {
@@ -42,7 +54,7 @@
     })
 </script>
 
-<div class="video-container">
+<div class="video-container" class:fluid>
     <video src={url} class="video-js vjs-fill" muted playsinline preload="metadata" controls
            bind:this={video_elem}></video>
 
@@ -76,6 +88,13 @@
         background-color: black;
         isolation: isolate;
         z-index: 0;
+    }
+
+    .video-container.fluid {
+        max-width: 100%;
+        min-width: 100%;
+        max-height: 100%;
+        min-height: 100%;
     }
 
     .video-js :global(.vjs-control-bar) {

@@ -1,17 +1,19 @@
 <script>
-    import MultiSelectField from "./components/interaction/multi-select-field.svelte";
+    import {SignRecording} from './index.js'
 
-    let options = $state([
-        {id: 'lex1', name: 'Lexique 1', selected: false},
-        {id: 'lex2', name: 'Lexique 2', selected: false},
-        {id: 'lex3', name: 'Lexique 3', selected: false},
-    ])
-
-    $inspect(options)
+    /**
+     * @param {{url: string, mime_type: string}} recorded_video
+     */
+    function download_recording(recorded_video) {
+        const link = document.createElement('a')
+        link.href = recorded_video.url
+        link.download = 'video.webm'
+        link.click()
+    }
 </script>
 
 <main>
-    <MultiSelectField default_text="Tous les lexiques" bind:options={options} search_placeholder="Nom d'un lexique..." />
+    <SignRecording on_recorded={download_recording} />
 </main>
 
 <style>

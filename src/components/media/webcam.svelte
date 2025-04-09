@@ -9,17 +9,18 @@
     /**
      * @import { Snippet } from 'svelte'
      * @typedef {Object} WebcamProps
+     * @property {boolean} [fluid=false] - If true, fill the parent container.
      * @property {Snippet} [overlay_icon] - Optional snippet to render an icon in the webcam overlay.
      * @property {Snippet} [overlay_content] - Optional snippet with HTML content in the webcam overlay.
+     * @property {MediaStream | null} [stream=null] - Bindable prop for the webcam's MediaStream. The component assigns
+     * the active stream to this prop once loaded. The parent component should use `bind:stream`.
      */
 
-    /**
-     * @type {WebcamProps}
-     */
-    let {overlay_icon, overlay_content} = $props()
-
+    /** @type {WebcamProps} */
+    let {fluid = false, overlay_icon, overlay_content, stream = $bindable(null)} = $props()
+    /** @type {HTMLVideoElement} */
     let video_elem
-    let stream = $state(null)
+    /** @type {string} */
     let media_state = $state('loading')
 
     /**
@@ -61,7 +62,7 @@
 
 </script>
 
-<div class="video-container">
+<div class="video-container" class:fluid>
     <video class="video-js vjs-fill" muted playsinline preload="metadata"
            bind:this={video_elem}></video>
 
@@ -111,7 +112,16 @@
         z-index: 0;
     }
 
+    .video-container.fluid {
+        max-width: 100%;
+        min-width: 100%;
+        max-height: 100%;
+        min-height: 100%;
+    }
+
     .video-container video {
+        object-fit: contain;
+        object-position: center;
         width: 100%;
         height: 100%;
     }
