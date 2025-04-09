@@ -65,10 +65,10 @@
 
 {#snippet overlay_content()}
     {#if current_state === 'waiting'}
-        <button class="sign-recording_start-button" onclick={() => (current_state = 'timer')}>Commencer
+        <button class="video-recording_start-button" onclick={() => (current_state = 'timer')}>Commencer
             l'enregistrement
         </button>
-        <p class="sign-recording_info">
+        <p class="video-recording_info">
             Une fois l'enregistrement commencé, vous aurez {recording_duration} secondes pour enregistrer votre signe.
             Ensuite, vous pourrez soit le valider, soit recommencer, ou même annuler.
         </p>
@@ -77,7 +77,7 @@
     {/if}
 {/snippet}
 
-<div class="sign-recording">
+<div class="video-recording">
     {#if current_state !== 'finished'}
         <Webcam fluid={true}
                 overlay_content={current_state === 'waiting' || current_state === 'timer' ? overlay_content : undefined}
@@ -92,13 +92,13 @@
 </div>
 
 <style>
-    .sign-recording {
+    .video-recording {
         max-width: 100rem;
         aspect-ratio: 16/9;
         position: relative;
     }
 
-    .sign-recording_start-button {
+    .video-recording_start-button {
         all: unset;
         padding: 1rem .5rem;
         font-size: 1.8rem;
@@ -110,17 +110,17 @@
         text-shadow: 1px 1px 2px black;
     }
 
-    .sign-recording_start-button:focus,
-    .sign-recording_start-button:hover {
+    .video-recording_start-button:focus,
+    .video-recording_start-button:hover {
         background: black;
         scale: 1.05;
     }
 
-    .sign-recording_start-button:focus-visible {
+    .video-recording_start-button:focus-visible {
         outline: .2rem solid red;
     }
 
-    .sign-recording_info {
+    .video-recording_info {
         margin: auto;
         padding-top: 1rem;
         text-align: justify;

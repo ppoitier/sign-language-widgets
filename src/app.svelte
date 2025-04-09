@@ -1,19 +1,9 @@
 <script>
-    import {SignRecording} from './index.js'
-
-    /**
-     * @param {{url: string, mime_type: string}} recorded_video
-     */
-    function download_recording(recorded_video) {
-        const link = document.createElement('a')
-        link.href = recorded_video.url
-        link.download = 'video.webm'
-        link.click()
-    }
+    import VideoImport from './components/interaction/video-import.svelte'
 </script>
 
 <main>
-    <SignRecording on_recorded={download_recording} />
+    <VideoImport on_imported={(video) => {console.log(video)}}/>
 </main>
 
 <style>

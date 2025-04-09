@@ -3,7 +3,8 @@ export {default as VideoOverlay} from './components/media/video-overlay.svelte'
 export {default as Webcam} from './components/media/webcam.svelte'
 export {default as VideoProgressBar} from './components/media/video-progress-bar.svelte'
 
-export {default as SignRecording} from './components/interaction/sign-recording.svelte'
+export {default as VideoRecording} from './components/interaction/video-recording.svelte'
+export {default as VideoImport} from './components/interaction/video-import.svelte'
 export {default as Timer} from './components/interaction/timer.svelte'
 
 export {default as SignCard} from './components/signs/sign-card.svelte'
@@ -23,6 +24,7 @@ export {default as ListIcon} from './components/icons/list-icon.svelte'
 export {default as LoadingIcon} from './components/icons/loading-icon.svelte'
 export {default as NotFoundIcon} from './components/icons/not-found-icon.svelte'
 export {default as CheckboxListIcon} from './components/icons/checkbox-list-icon.svelte'
+export {default as VideoFileIcon} from './components/icons/video-file-icon.svelte'
 
 export {default as MultiSelectField} from './components/interaction/multi-select-field.svelte'
 
