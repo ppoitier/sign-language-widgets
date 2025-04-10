@@ -23,14 +23,17 @@
      * Props for the tag list component.
      * @type {{
      *  texts: string[],       // Description: Array of tags.
-     *  on_save: SaveHandler,  // Description: Callback function invoked when a tag is edited and saved.
+     *  on_updated: SaveHandler,  // Description: Callback function invoked when a tag is edited and saved.
      *  on_new: AddHandler,    // Description: Callback function invoked when a tag is added.
      *  editable?: boolean,    // Description: If true, allows tags to be edited. Defaults to false.
      * }}
      */
-    let {texts, on_save, on_new, editable = false} = $props()
+    let {texts, on_updated, on_new, editable = false} = $props()
+    /** @type {boolean} */
     let editing_new_tag = $state(false)
+    /** @type {string} */
     let new_tag_text = $state('')
+    /** @type {any} */
     let new_tag = $state(null)
 
     /**
@@ -61,7 +64,7 @@
 <div class="tag-list">
     {#each texts as text, index}
         {#if editable}
-            <EditableTag {text} on_save={() => on_save(index, text)}/>
+            <EditableTag {text} on_save={(new_text) => on_updated(index, new_text)}/>
         {:else}
             <Tag {text}/>
         {/if}
