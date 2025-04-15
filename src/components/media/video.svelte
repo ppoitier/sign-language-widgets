@@ -79,9 +79,9 @@
 <style>
     .video-container {
         position: relative;
-        max-width: 48rem;
-        min-width: 24rem;
-        min-height: 13.5rem;
+        max-width: var(--card-max-width);
+        min-width: var(--card-min-width);
+        min-height: var(--video-min-height);
         aspect-ratio: 16/9;
         width: 100%;
         height: auto;

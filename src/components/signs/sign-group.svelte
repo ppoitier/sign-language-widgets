@@ -3,9 +3,9 @@
     import SignList from './sign-list.svelte'
     import ListIcon from '../icons/list-icon.svelte'
     import GridIcon from '../icons/grid-icon.svelte'
-    import IconButton from '../interaction/icon-button.svelte';
+    import IconButton from '../interaction/icon-button.svelte'
 
-    let mode = $state('list')
+    let mode = $state('grid')
 </script>
 
 <div class="sign-group">
@@ -31,7 +31,7 @@
 <style>
     .sign-group_actions {
         text-align: right;
-        font-size: 4rem;
+        font-size: 2.4rem;
         color: red;
     }
 </style>

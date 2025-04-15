@@ -14,12 +14,10 @@
     --card-border: #8c8c8c;
     --card-background: #f4f0f0;
 
-    --card-min-width: 24rem;
-    --card-max-width: 48rem;
+    --card-min-width: 20rem;
+    --card-max-width: 32rem;
 
-    --min-lexicon-card-width: 20rem;
-    --max-lexicon-card-width: 32rem;
-    --min-lexicon-card-height: 20rem;
+    --video-min-height: 11.25rem;
 
     --progress-bar-color: rgba(1, 178, 175, 1.0);
 

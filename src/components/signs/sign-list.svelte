@@ -49,7 +49,6 @@
     .sign-list th:nth-child(1),
     .sign-list :global(td:nth-child(1)) {
         width: 40%;
-        max-width: 32rem;
     }
 
     .sign-list :global(td:nth-child(2)) {

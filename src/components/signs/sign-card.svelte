@@ -9,7 +9,7 @@
     </div>
     <div class="sign-card_actions">
         <TagList texts={['voiture', 'auto', 'automobile']}
-                 on_save={() => {}}
+                 on_updated={() => {}}
                  on_new={() => {}}
                  editable={true}
         />
