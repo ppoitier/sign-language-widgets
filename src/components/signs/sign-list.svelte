@@ -1,7 +1,30 @@
 <script>
     import SignListItem from "./sign-list-item.svelte"
 
-    let entries = [1, 2, 3, 4, 5, 6, 7, 8]
+    /**
+     * @typedef {import('../../entities/sign.js').Sign} Sign
+     *
+     * @typedef {Object} SignListProps
+     * @property {Sign[]} signs - Signs that are displayed in the group.
+     * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
+     * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
+     */
+
+    /**
+     * @callback NewWordCallback
+     * @param {string} sign_id
+     * @param {string} new_word
+     */
+
+    /**
+     * @callback UpdatedWordCallback
+     * @param {string} sign_id
+     * @param {number} word_index
+     * @param {string} new_word
+     */
+
+    /** @type {SignListProps} */
+    let {signs, on_new_word, on_updated_word} = $props()
 </script>
 
 <table class="sign-list">
@@ -13,8 +36,8 @@
     </tr>
     </thead>
     <tbody>
-    {#each entries as entry}
-        <SignListItem/>
+    {#each signs as sign}
+        <SignListItem {sign} {on_new_word} {on_updated_word}/>
     {/each}
     </tbody>
 </table>
