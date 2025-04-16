@@ -9,6 +9,7 @@
      * @property {Sign} sign - Sign that is displayed in the card.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
+     * @property {boolean} fluid - If true, the card will occupy all the space available.
      */
 
     /**
@@ -25,7 +26,7 @@
      */
 
     /** @type {SignCardProps} */
-    let {sign, on_new_word, on_updated_word} = $props()
+    let {sign, on_new_word, on_updated_word, fluid=false} = $props()
 
     /**
      * @param {string} new_word
@@ -44,7 +45,7 @@
 
 </script>
 
-<div class="sign-card">
+<div class="sign-card" class:fluid>
     <div class="sign-card_preview">
         <Video url={sign.url} mime_type={sign.mime_type} />
     </div>
@@ -66,6 +67,10 @@
         border-radius: 0.8rem;
         border: 0.1rem solid var(--card-border);
         background-color: var(--card-background);
+    }
+
+    .sign-card.fluid {
+        max-width: 100%;
     }
 
     .sign-card_actions {
