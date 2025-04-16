@@ -47,7 +47,7 @@
 
 <div class="sign-card" class:fluid>
     <div class="sign-card_preview">
-        <Video url={sign.url} mime_type={sign.mime_type} />
+        <Video url={sign.url} mime_type={sign.mime_type} {fluid} />
     </div>
     <div class="sign-card_actions">
         <TagList texts={sign.words}
