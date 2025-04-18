@@ -36,6 +36,13 @@
         })
     }
 
+    function stop_webcam_stream() {
+        if (!stream) {
+            return
+        }
+        stream.getTracks().forEach(track => track.stop())
+    }
+
     onMount(() => {
         if (!video_elem) {
             throw new Error('Missing video element.')
@@ -55,9 +62,13 @@
                 })
             })
             .catch(() => {
+                stop_webcam_stream()
                 media_state = 'error'
                 error_store.set({code: 2, message: 'Unable to load webcam.'})
             })
+        return () => {
+            stop_webcam_stream()
+        }
     })
 
 </script>

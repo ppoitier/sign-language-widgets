@@ -31,7 +31,8 @@
             <input type="checkbox" name="{id}_all" id="{id}_all" checked={all_selected} onclick={all_button_clicked}>
             <label for="{id}_all">{default_text}</label>
         </div>
-        <button class="multi-select_icon" onclick={() => (opened = !opened)}>
+        <!-- TODO: prevent this button from submitting the parent form. -->
+        <button class="multi-select_icon" type="button" onclick={() => (opened = !opened)}>
             <CheckboxListIcon/>
         </button>
     </div>
