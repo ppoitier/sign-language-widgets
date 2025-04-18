@@ -14,19 +14,19 @@ importers:
     devDependencies:
       '@sveltejs/package':
         specifier: ^2.3.11
-        version: 2.3.11(svelte@5.27.0)(typescript@5.8.3)
+        version: 2.3.11(svelte@5.27.3)(typescript@5.8.3)
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.0.3
-        version: 5.0.3(svelte@5.27.0)(vite@6.3.0)
+        version: 5.0.3(svelte@5.27.3)(vite@6.3.2)
       svelte:
-        specifier: ^5.27.0
-        version: 5.27.0
+        specifier: ^5.27.3
+        version: 5.27.3
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
       vite:
-        specifier: ^6.3.0
-        version: 6.3.0
+        specifier: ^6.3.2
+        version: 6.3.2
 
 packages:
 
@@ -525,8 +525,8 @@ packages:
       svelte: ^3.55 || ^4.0.0-next.0 || ^4.0 || ^5.0.0-next.0
       typescript: ^4.9.4 || ^5.0.0
 
-  svelte@5.27.0:
-    resolution: {integrity: sha512-Uai13Ydt1ZE+bUHme6b9U38PCYVNCqBRoBMkUKbFbKiD7kHWjdUUrklYAQZJxyKK81qII4mrBwe/YmvEMSlC9w==}
+  svelte@5.27.3:
+    resolution: {integrity: sha512-MK16NUEFwAunCkdJpIIJ6hvKElx0zFlKMqQd7NAIugMfrL0YeOH8VEn5pg9g2Q6RLj2JrGJL6c0zaAwmXx/nHQ==}
     engines: {node: '>=18'}
 
   tinyglobby@0.2.12:
@@ -556,8 +556,8 @@ packages:
   videojs-vtt.js@0.15.5:
     resolution: {integrity: sha512-yZbBxvA7QMYn15Lr/ZfhhLPrNpI/RmCSCqgIff57GC2gIrV5YfyzLfLyZMj0NnZSAz8syB4N0nHXpZg9MyrMOQ==}
 
-  vite@6.3.0:
-    resolution: {integrity: sha512-9aC0n4pr6hIbvi1YOpFjwQ+QOTGssvbJKoeYkuHHGWwlXfdxQlI8L2qNMo9awEEcCPSiS+5mJZk5jH1PAqoDeQ==}
+  vite@6.3.2:
+    resolution: {integrity: sha512-ZSvGOXKGceizRQIZSz7TGJ0pS3QLlVY/9hwxVh17W3re67je1RKYzFHivZ/t0tubU78Vkyb9WnHPENSBCzbckg==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -774,36 +774,36 @@ snapshots:
     dependencies:
       acorn: 8.14.1
 
-  '@sveltejs/package@2.3.11(svelte@5.27.0)(typescript@5.8.3)':
+  '@sveltejs/package@2.3.11(svelte@5.27.3)(typescript@5.8.3)':
     dependencies:
       chokidar: 4.0.3
       kleur: 4.1.5
       sade: 1.8.1
       semver: 7.7.1
-      svelte: 5.27.0
-      svelte2tsx: 0.7.36(svelte@5.27.0)(typescript@5.8.3)
+      svelte: 5.27.3
+      svelte2tsx: 0.7.36(svelte@5.27.3)(typescript@5.8.3)
     transitivePeerDependencies:
       - typescript
 
-  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.27.0)(vite@6.3.0))(svelte@5.27.0)(vite@6.3.0)':
+  '@sveltejs/vite-plugin-svelte-inspector@4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.27.3)(vite@6.3.2))(svelte@5.27.3)(vite@6.3.2)':
     dependencies:
-      '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.27.0)(vite@6.3.0)
+      '@sveltejs/vite-plugin-svelte': 5.0.3(svelte@5.27.3)(vite@6.3.2)
       debug: 4.4.0
-      svelte: 5.27.0
-      vite: 6.3.0
+      svelte: 5.27.3
+      vite: 6.3.2
     transitivePeerDependencies:
       - supports-color
 
-  '@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.27.0)(vite@6.3.0)':
+  '@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.27.3)(vite@6.3.2)':
     dependencies:
-      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.27.0)(vite@6.3.0))(svelte@5.27.0)(vite@6.3.0)
+      '@sveltejs/vite-plugin-svelte-inspector': 4.0.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.27.3)(vite@6.3.2))(svelte@5.27.3)(vite@6.3.2)
       debug: 4.4.0
       deepmerge: 4.3.1
       kleur: 4.1.5
       magic-string: 0.30.17
-      svelte: 5.27.0
-      vite: 6.3.0
-      vitefu: 1.0.6(vite@6.3.0)
+      svelte: 5.27.3
+      vite: 6.3.2
+      vitefu: 1.0.6(vite@6.3.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -1018,14 +1018,14 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  svelte2tsx@0.7.36(svelte@5.27.0)(typescript@5.8.3):
+  svelte2tsx@0.7.36(svelte@5.27.3)(typescript@5.8.3):
     dependencies:
       dedent-js: 1.0.1
       pascal-case: 3.1.2
-      svelte: 5.27.0
+      svelte: 5.27.3
       typescript: 5.8.3
 
-  svelte@5.27.0:
+  svelte@5.27.3:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -1077,7 +1077,7 @@ snapshots:
     dependencies:
       global: 4.4.0
 
-  vite@6.3.0:
+  vite@6.3.2:
     dependencies:
       esbuild: 0.25.2
       fdir: 6.4.3(picomatch@4.0.2)
@@ -1088,8 +1088,8 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  vitefu@1.0.6(vite@6.3.0):
+  vitefu@1.0.6(vite@6.3.2):
     optionalDependencies:
-      vite: 6.3.0
+      vite: 6.3.2
 
   zimmerframe@1.1.2: {}
