@@ -9,15 +9,18 @@
     import NotFoundIcon from '../icons/not-found-icon.svelte'
 
     /**
+     * @typedef {import('svelte').Snippet} Snippet
+     *
      * @typedef {Object} VideoProps
      * @property {string} url - The URL of the video.
      * @property {string} mime_type - MIME type of the video.
      * @property {boolean} [autoplay=true] - If true, play the video when loading.
      * @property {boolean} [loop=true] - If true, loop the playback of the video.
+     * @property {Snippet | undefined} [children] - Additional components in the video container.
      */
 
     /** @type{VideoProps} */
-    let {url, mime_type, autoplay=true, loop=true} = $props()
+    let {url, mime_type, autoplay=true, loop=true, children} = $props()
 
     /** @type {HTMLVideoElement} */
     let video_elem
@@ -74,6 +77,7 @@
             {/snippet}
         </VideoOverlay>
     {/if}
+    {@render children()}
 </div>
 
 

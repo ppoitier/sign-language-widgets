@@ -1,14 +1,17 @@
 <script>
+    import VideoActions from "../interaction/video-actions.svelte";
     import Video from "../media/video.svelte"
     import TagList from "../tags/tag-list.svelte"
 
     /**
      * @typedef {import('../../entities/sign.js').Sign} Sign
+     * @typedef {import('svelte').Snippet} Snippet
      *
      * @typedef {Object} SignCardProps
      * @property {Sign} sign - Sign displayed in the card.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
+     * @property {Snippet | undefined} video_actions - Video actions added to the top-right corner of the video.
      */
 
     /**
@@ -25,7 +28,7 @@
      */
 
     /** @type {SignCardProps} */
-    let {sign, on_new_word, on_updated_word} = $props()
+    let {sign, on_new_word, on_updated_word, video_actions} = $props()
 
     /**
      * @param {string} new_word
@@ -46,7 +49,11 @@
 
 <div class="sign-card">
     <div class="sign-card_preview">
-        <Video url={sign.url} mime_type={sign.mime_type} />
+        <Video url={sign.url} mime_type={sign.mime_type}>
+            <VideoActions>
+                {@render video_actions?.()}
+            </VideoActions>
+        </Video>
     </div>
     <div class="sign-card_actions">
         <TagList texts={sign.words}
