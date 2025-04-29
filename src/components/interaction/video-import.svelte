@@ -97,7 +97,7 @@
 >
     {#if imported_video !== null}
         <div class="video-import_preview">
-            <Video url={imported_video.url} mime_type={imported_video.mime_type} fluid={true} />
+            <Video url={imported_video.url} mime_type={imported_video.mime_type} />
         </div>
     {/if}
 

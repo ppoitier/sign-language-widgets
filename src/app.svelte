@@ -1,5 +1,6 @@
 <script>
     import SignGroup from './components/signs/sign-group.svelte'
+    import TestGrid from './components/test-grid.svelte';
     import {Sign} from "./entities/sign.js";
 
     const data = [
@@ -19,12 +20,15 @@
                on_new_word={(sign_id, new_word) => console.log('new word', sign_id, new_word)}
                on_updated_word={(sign_id, word_index, new_word) => console.log('updated word', sign_id, word_index, new_word)}
     />
+
+<!--    <TestGrid/>-->
+
 </main>
 
 <style>
     main {
         padding: 5rem;
         margin: auto;
-        max-width: 100rem;
+        /*max-width: 100rem;*/
     }
 </style>

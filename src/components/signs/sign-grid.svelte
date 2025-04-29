@@ -35,11 +35,15 @@
 
 <style>
     div {
+        /* Calculated minimum width for items and ensure a strict max number of columns */
+        --item-min-width: calc((var(--container-max-width) - (var(--grid-max-nb-columns) - 1) * var(--grid-gap)) / var(--grid-max-nb-columns));
+        --item-min-height: calc(9 / 16 * var(--item-min-width));
+
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(var(--card-min-width), 1fr));
-        justify-content: space-evenly;
-        align-items: start;
-        gap: 2rem;
-        min-height: 24rem;
+        gap: var(--grid-gap);
+        grid-template-columns: repeat(auto-fit, minmax(var(--item-min-width), 1fr));
+
+        max-width: var(--container-max-width);
+        margin: 0 auto;
     }
 </style>
