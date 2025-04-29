@@ -1,60 +1,67 @@
 <script>
-import Video from '../media/video.svelte'
-import TagList from '../tags/tag-list.svelte'
+    import VideoActions from '../interaction/video-actions.svelte'
+    import Video from '../media/video.svelte'
+    import TagList from '../tags/tag-list.svelte'
 
-/**
- * @typedef {import('../../entities/sign.js').Sign} Sign
- *
- * @typedef {Object} SignListItemProps
- * @property {Sign} sign - Sign that is displayed in the card.
- * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
- * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
- */
+    /**
+     * @typedef {import('../../entities/sign.js').Sign} Sign
+     * @typedef {import('svelte').Snippet} Snippet
+     *
+     * @typedef {Object} SignListItemProps
+     * @property {Sign} sign - Sign displayed in the card.
+     * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
+     * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
+     * @property {Snippet | undefined} [video_actions] - Additional actions displayed in the top-right corner of the sign video.
+     */
 
-/**
- * @callback NewWordCallback
- * @param {string} sign_id
- * @param {string} new_word
- */
+    /**
+     * @callback NewWordCallback
+     * @param {string} sign_id
+     * @param {string} new_word
+     */
 
-/**
- * @callback UpdatedWordCallback
- * @param {string} sign_id
- * @param {number} word_index
- * @param {string} new_word
- */
+    /**
+     * @callback UpdatedWordCallback
+     * @param {string} sign_id
+     * @param {number} word_index
+     * @param {string} new_word
+     */
 
-/** @type {SignListItemProps} */
-let {sign, on_new_word, on_updated_word} = $props()
+    /** @type {SignListItemProps} */
+    let {sign, on_new_word, on_updated_word, video_actions} = $props()
 
-/**
- * @param {string} new_word
- */
-function handle_new_word(new_word) {
-    on_new_word(sign.id, new_word)
-}
+    /**
+     * @param {string} new_word
+     */
+    function handle_new_word(new_word) {
+        on_new_word(sign.id, new_word)
+    }
 
-/**
- * @param {number} index
- * @param {string} new_word
- */
-function handle_updated_word(index, new_word) {
-    on_updated_word(sign.id, index, new_word)
-}
+    /**
+     * @param {number} index
+     * @param {string} new_word
+     */
+    function handle_updated_word(index, new_word) {
+        on_updated_word(sign.id, index, new_word)
+    }
 </script>
 
 <tr class="sign-list-item">
     <td>
         <div class="sign-list-item_preview">
-            <Video url={sign.url} mime_type={sign.mime_type} />
+            <Video mime_type={sign.mime_type} url={sign.url}>
+                <VideoActions>
+                    {@render video_actions?.()}
+                </VideoActions>
+            </Video>
         </div>
     </td>
     <td>
         <div class="sign-list-item_info">
-            <TagList texts={sign.words}
-                     on_updated={handle_updated_word}
+            <TagList editable={true}
                      on_new={handle_new_word}
-                     editable={true}
+                     on_updated={handle_updated_word}
+                     texts={sign.words}
             />
         </div>
     </td>

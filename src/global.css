@@ -18,6 +18,9 @@
     --field-background: #ffffff;
     --field-active-background: #d8d8d8;
 
+    --action-color: #6a6a6a;
+    --active-action-color: rgba(1, 178, 175, 1.0);
+
     --container-max-width: 100rem;
     --grid-gap: 1rem;
     --grid-max-nb-columns: 4;

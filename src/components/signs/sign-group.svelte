@@ -4,6 +4,7 @@
     import ListIcon from '../icons/list-icon.svelte'
     import GridIcon from '../icons/grid-icon.svelte'
     import IconButton from '../interaction/icon-button.svelte'
+    import VideoDownloadModal from '../interaction/video-download-modal.svelte';
 
     /**
      * @typedef {import('../../entities/sign.js').Sign} Sign
@@ -12,6 +13,9 @@
      * @property {Sign[]} signs - Signs that are displayed in the group.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
+     * @property {SignDownloadCallback} on_sign_download - Function called when the user wants to download a sign.
+     * @property {SignInfoCallback} on_sign_info - Function called when the user wants information about a sign.
+     * @property {string} [mode='grid'] - Either 'grid' mode or 'list' mode. Change the way signs are displayed.
      */
 
     /**
@@ -27,13 +31,35 @@
      * @param {string} new_word
      */
 
+    /**
+     * @callback SignDownloadCallback
+     * @param {string} sign_id
+     * @param {string} extension
+     */
+
+    /**
+     * @callback SignInfoCallback
+     * @param {string} sign_id
+     */
+
     /** @type {SignGroupProps} */
-    let {signs, on_new_word, on_updated_word} = $props()
-    /** @type {string} */
-    let mode = $state('grid')
+    let {signs, on_new_word, on_updated_word, on_sign_download, on_sign_info, mode='grid'} = $props()
+
+    let download_modal = $state()
+
+    /**
+     * @param {String} sign_id
+     */
+    function handle_download_button(sign_id) {
+        if (download_modal) {
+            download_modal.open_modal(sign_id)
+        }
+    }
 </script>
 
 <div class="sign-group">
+    <VideoDownloadModal bind:this={download_modal} on_download={on_sign_download} />
+
     <div class="sign-group_actions">
         {#if mode === 'list'}
             <IconButton onclick={() => (mode = 'grid')} label="Switch to grid view.">
@@ -47,9 +73,9 @@
     </div>
 
     {#if mode === 'list'}
-        <SignList {signs} {on_new_word} {on_updated_word}/>
+        <SignList {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info} />
     {:else}
-        <SignGrid {signs} {on_new_word} {on_updated_word}/>
+        <SignGrid {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info} />
     {/if}
 </div>
 

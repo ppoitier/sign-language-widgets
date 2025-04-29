@@ -77,7 +77,7 @@
             {/snippet}
         </VideoOverlay>
     {/if}
-    {@render children()}
+    {@render children?.()}
 </div>
 
 

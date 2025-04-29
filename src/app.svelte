@@ -58,10 +58,9 @@
     <SignGroup on_new_word={(sign_id, new_word) => console.log('new word', sign_id, new_word)}
                on_updated_word={(sign_id, word_index, new_word) => console.log('updated word', sign_id, word_index, new_word)}
                signs={data}
+               on_sign_info={(sign_id) => (console.log("Ask information about " + sign_id))}
+               on_sign_download={(sign_id, extension) => (console.log("Wants to download sign " + sign_id + '.' + extension))}
     />
-
-    <!--    <TestGrid/>-->
-
 </main>
 
 <style>

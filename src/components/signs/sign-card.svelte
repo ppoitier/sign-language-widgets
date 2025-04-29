@@ -11,7 +11,7 @@
      * @property {Sign} sign - Sign displayed in the card.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
-     * @property {Snippet | undefined} video_actions - Video actions added to the top-right corner of the video.
+     * @property {Snippet | undefined} [video_actions] - Video actions added to the top-right corner of the video.
      */
 
     /**

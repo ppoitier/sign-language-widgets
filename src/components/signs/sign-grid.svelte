@@ -1,5 +1,6 @@
 <script>
-    import SignCard from "./sign-card.svelte"
+    import SignCard from './sign-card.svelte'
+    import SignActions from './sign-actions.svelte'
 
     /**
      * @typedef {import('../../entities/sign.js').Sign} Sign
@@ -8,6 +9,8 @@
      * @property {Sign[]} signs - Signs that are displayed in the group.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
+     * @property {OnDownloadCallback} [on_download] - Function called when the user presses the info button on a sign.
+     * @property {OnInfoCallback} [on_info] - Function called when the user presses the download button on a sign.
      */
 
     /**
@@ -23,13 +26,26 @@
      * @param {string} new_word
      */
 
+    /**
+     * @callback OnDownloadCallback
+     * @param {string} sign_id
+     */
+
+    /**
+     * @callback OnInfoCallback
+     * @param {string} sign_id
+     */
+
     /** @type {SignGridProps} */
-    let {signs, on_new_word, on_updated_word} = $props()
+    let {signs, on_new_word, on_updated_word, on_download, on_info} = $props()
 </script>
 
 <div>
     {#each signs as sign}
-        <SignCard {sign} {on_new_word} {on_updated_word} />
+        {#snippet video_actions()}
+            <SignActions on_download={() => on_download?.(sign.id)} on_info={() => on_info?.(sign.id)} />
+        {/snippet}
+        <SignCard {sign} {on_new_word} {on_updated_word} {video_actions}/>
     {/each}
 </div>
 
