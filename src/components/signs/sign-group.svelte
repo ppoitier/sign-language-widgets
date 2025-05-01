@@ -4,7 +4,7 @@
     import ListIcon from '../icons/list-icon.svelte'
     import GridIcon from '../icons/grid-icon.svelte'
     import IconButton from '../interaction/icon-button.svelte'
-    import VideoDownloadModal from '../interaction/video-download-modal.svelte';
+    import VideoDownloadModal from '../interaction/video-download-modal.svelte'
 
     /**
      * @typedef {import('../../entities/sign.js').Sign} Sign
@@ -14,7 +14,9 @@
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
      * @property {SignDownloadCallback} on_sign_download - Function called when the user wants to download a sign.
-     * @property {SignInfoCallback} on_sign_info - Function called when the user wants information about a sign.
+     * @property {SignActionCallback} on_sign_info - Function called when the user wants information about a sign.
+     * @property {SignActionCallback} on_hide_sign - Function called when the user wants to hide a sign.
+     * @property {SignActionCallback} on_add_from_sign - Function called when the user wants to create a new sign from a sign.
      * @property {string} [mode='grid'] - Either 'grid' mode or 'list' mode. Change the way signs are displayed.
      */
 
@@ -38,12 +40,21 @@
      */
 
     /**
-     * @callback SignInfoCallback
+     * @callback SignActionCallback
      * @param {string} sign_id
      */
 
     /** @type {SignGroupProps} */
-    let {signs, on_new_word, on_updated_word, on_sign_download, on_sign_info, mode='grid'} = $props()
+    let {
+        signs,
+        on_new_word,
+        on_updated_word,
+        on_sign_download,
+        on_sign_info,
+        on_hide_sign,
+        on_add_from_sign,
+        mode = 'grid',
+    } = $props()
 
     let download_modal = $state()
 
@@ -58,7 +69,7 @@
 </script>
 
 <div class="sign-group">
-    <VideoDownloadModal bind:this={download_modal} on_download={on_sign_download} />
+    <VideoDownloadModal bind:this={download_modal} on_download={on_sign_download}/>
 
     <div class="sign-group_actions">
         {#if mode === 'list'}
@@ -73,9 +84,11 @@
     </div>
 
     {#if mode === 'list'}
-        <SignList {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info} />
+        <SignList {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info}
+                  on_hide={on_hide_sign} on_add_from={on_add_from_sign}/>
     {:else}
-        <SignGrid {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info} />
+        <SignGrid {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info}
+                  on_hide={on_hide_sign} on_add_from={on_add_from_sign}/>
     {/if}
 </div>
 

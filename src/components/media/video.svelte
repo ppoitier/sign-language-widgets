@@ -77,7 +77,10 @@
             {/snippet}
         </VideoOverlay>
     {/if}
-    {@render children?.()}
+
+    <div class="video-container_actions-overlay">
+        {@render children?.()}
+    </div>
 </div>
 
 
@@ -92,6 +95,23 @@
         isolation: isolate;
         z-index: 0;
     }
+
+    .video-container_actions-overlay {
+        opacity: 1;
+        transition: opacity .2s ease-in-out;
+    }
+
+    .video-container:hover > .video-container_actions-overlay {
+        opacity: 1;
+    }
+
+    @media (pointer: fine) {
+        .video-container_actions-overlay {
+            opacity: 0;
+        }
+    }
+
+    /* ---- Customize VideoJS styling ---- */
 
     .video-js :global(.vjs-control-bar) {
         /* Hide the control bar by default */

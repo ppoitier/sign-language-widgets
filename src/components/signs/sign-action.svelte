@@ -1,8 +1,8 @@
 <script>
-    let {children, onclick} = $props()
+    let {children, onclick, color="#6a6a6a"} = $props()
 </script>
 
-<button class="sign-action" {onclick}>
+<button class="sign-action" {onclick} style="color: {color}">
     {@render children?.()}
 </button>
 
@@ -14,7 +14,6 @@
         background: rgba(255, 255, 255, 0.6);
         border-radius: .5rem;
         border: 1px solid white;
-        color: var(--action-color);
         display: grid;
         place-items: center;
         font-size: 2rem;

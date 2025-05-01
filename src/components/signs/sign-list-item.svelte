@@ -11,7 +11,8 @@
      * @property {Sign} sign - Sign displayed in the card.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
-     * @property {Snippet | undefined} [video_actions] - Additional actions displayed in the top-right corner of the sign video.
+     * @property {Snippet | undefined} [video_actions_right] - Additional actions displayed in the top-right corner of the sign video.
+     * @property {Snippet | undefined} [video_actions_left] - Additional actions displayed in the top-left corner of the sign video.
      */
 
     /**
@@ -28,7 +29,7 @@
      */
 
     /** @type {SignListItemProps} */
-    let {sign, on_new_word, on_updated_word, video_actions} = $props()
+    let {sign, on_new_word, on_updated_word, video_actions_right, video_actions_left} = $props()
 
     /**
      * @param {string} new_word
@@ -51,7 +52,10 @@
         <div class="sign-list-item_preview">
             <Video mime_type={sign.mime_type} url={sign.url}>
                 <VideoActions>
-                    {@render video_actions?.()}
+                    {@render video_actions_right?.()}
+                </VideoActions>
+                <VideoActions location="top-left">
+                    {@render video_actions_left?.()}
                 </VideoActions>
             </Video>
         </div>
