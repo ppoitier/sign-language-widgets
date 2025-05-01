@@ -14,13 +14,14 @@
      *  text: string,       // Description: Text content of the tag.
      *  on_save: SaveHandler,  // Description: Callback function invoked when a tag is edited and saved.
      *  on_cancel?: function, // Description: Optional callback function invoked when the editing is canceled.
+     *  on_delete?: function, // Description: Optional callback function invoked when a tag is deleted.
      * }}
      */
     let {
         text = 'default tag',
         on_save,
-        on_cancel = () => {
-        },
+        on_cancel,
+        on_delete,
     } = $props()
 
     /** @type {boolean} */
@@ -73,11 +74,13 @@
             return
 
         const trimmed_text = edit_text.trim()
-        if (trimmed_text && trimmed_text !== text) {
+        if (trimmed_text.length < 1) {
+            on_delete?.()
+        } else if (trimmed_text !== text) {
             on_save(trimmed_text)
             // Note: We don't update 'text' directly here; the parent should update the prop
         } else {
-            on_cancel()
+            on_cancel?.()
         }
         is_editing = false
     }
@@ -104,6 +107,7 @@
         }
     }
 
+    // noinspection JSUnusedGlobalSymbols
     /**
      * Explicit function to focus and edit the tag.
      */

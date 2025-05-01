@@ -5,10 +5,17 @@
     import {tick} from 'svelte'
 
     /**
-     * Callback function triggered when a tag is saved.
-     * @callback SaveHandler
+     * Callback function triggered when a tag is updated.
+     * @callback UpdatedHandler
      * @param {number} index The index of the tag being saved.
      * @param {string} newText The new text content of the tag.
+     * @returns {void}
+     */
+
+    /**
+     * Callback function triggered when a tag is deleted.
+     * @callback DeletedHandler
+     * @param {number} index The index of the tag being saved.
      * @returns {void}
      */
 
@@ -23,12 +30,13 @@
      * Props for the tag list component.
      * @type {{
      *  texts: string[],       // Description: Array of tags.
-     *  on_updated: SaveHandler,  // Description: Callback function invoked when a tag is edited and saved.
+     *  on_updated: UpdatedHandler,  // Description: Callback function invoked when a tag is edited and saved.
      *  on_new: AddHandler,    // Description: Callback function invoked when a tag is added.
+     *  on_deleted: DeletedHandler, // Description: Callback function invoked when a tag is deleted.
      *  editable?: boolean,    // Description: If true, allows tags to be edited. Defaults to false.
      * }}
      */
-    let {texts, on_updated, on_new, editable = false} = $props()
+    let {texts, on_updated, on_new, on_deleted, editable = false} = $props()
     /** @type {boolean} */
     let editing_new_tag = $state(false)
     /** @type {string} */
@@ -64,7 +72,7 @@
 <div class="tag-list">
     {#each texts as text, index}
         {#if editable}
-            <EditableTag {text} on_save={(new_text) => on_updated(index, new_text)}/>
+            <EditableTag {text} on_save={(new_text) => on_updated(index, new_text)} on_delete={() => on_deleted(index)}/>
         {:else}
             <Tag {text}/>
         {/if}

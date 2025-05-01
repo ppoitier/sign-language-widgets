@@ -10,6 +10,7 @@
      * @property {Sign[]} signs - Signs that are displayed in the group.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
+     * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
      * @property {OnActionCallback} [on_download] - Function called when the user presses the info button on a sign.
      * @property {OnActionCallback} [on_info] - Function called when the user presses the download button on a sign.
      * @property {OnActionCallback} [on_hide] - Function called when the user presses the hide button on a sign.
@@ -30,12 +31,18 @@
      */
 
     /**
+     * @callback DeletedWordCallback
+     * @param {string} sign_id
+     * @param {string} word_id
+     */
+
+    /**
      * @callback OnActionCallback
      * @param {string} sign_id
      */
 
     /** @type {SignGridProps} */
-    let {signs, on_new_word, on_updated_word, on_download, on_info, on_hide, on_add_from} = $props()
+    let {signs, on_new_word, on_updated_word, on_deleted_word, on_download, on_info, on_hide, on_add_from} = $props()
 </script>
 
 <div>
@@ -47,7 +54,7 @@
             <SignSecondaryActions editable={sign.editable} on_hide={() => on_hide?.(sign.id)}
                                   on_add_from={() => on_add_from?.(sign.id)}/>
         {/snippet}
-        <SignCard {sign} {on_new_word} {on_updated_word} {video_actions_right} {video_actions_left}/>
+        <SignCard {sign} {on_new_word} {on_updated_word} {on_deleted_word} {video_actions_right} {video_actions_left}/>
     {/each}
 </div>
 

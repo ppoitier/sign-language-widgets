@@ -13,6 +13,7 @@
      * @property {Sign[]} signs - Signs that are displayed in the group.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
+     * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
      * @property {SignDownloadCallback} on_sign_download - Function called when the user wants to download a sign.
      * @property {SignActionCallback} on_sign_info - Function called when the user wants information about a sign.
      * @property {SignActionCallback} on_hide_sign - Function called when the user wants to hide a sign.
@@ -34,6 +35,12 @@
      */
 
     /**
+     * @callback DeletedWordCallback
+     * @param {string} sign_id
+     * @param {string} word_id
+     */
+
+    /**
      * @callback SignDownloadCallback
      * @param {string} sign_id
      * @param {string} extension
@@ -49,6 +56,7 @@
         signs,
         on_new_word,
         on_updated_word,
+        on_deleted_word,
         on_sign_download,
         on_sign_info,
         on_hide_sign,
@@ -84,10 +92,10 @@
     </div>
 
     {#if mode === 'list'}
-        <SignList {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info}
+        <SignList {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={handle_download_button} on_info={on_sign_info}
                   on_hide={on_hide_sign} on_add_from={on_add_from_sign}/>
     {:else}
-        <SignGrid {signs} {on_new_word} {on_updated_word} on_download={handle_download_button} on_info={on_sign_info}
+        <SignGrid {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={handle_download_button} on_info={on_sign_info}
                   on_hide={on_hide_sign} on_add_from={on_add_from_sign}/>
     {/if}
 </div>

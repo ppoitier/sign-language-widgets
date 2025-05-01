@@ -11,6 +11,7 @@
      * @property {Sign} sign - Sign displayed in the card.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
+     * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
      * @property {Snippet | undefined} [video_actions_right] - Additional actions displayed in the top-right corner of the sign video.
      * @property {Snippet | undefined} [video_actions_left] - Additional actions displayed in the top-left corner of the sign video.
      */
@@ -28,8 +29,14 @@
      * @param {string} new_word
      */
 
+    /**
+     * @callback DeletedWordCallback
+     * @param {string} sign_id
+     * @param {string} word_id
+     */
+
     /** @type {SignListItemProps} */
-    let {sign, on_new_word, on_updated_word, video_actions_right, video_actions_left} = $props()
+    let {sign, on_new_word, on_updated_word, on_deleted_word, video_actions_right, video_actions_left} = $props()
     let word_names = $derived(sign.words.map(w => w.word))
 
     /**
@@ -45,6 +52,13 @@
      */
     function handle_updated_word(index, new_word) {
         on_updated_word(sign.id, sign.words[index].id, new_word)
+    }
+
+    /**
+     * @param {number} index
+     */
+    function handle_deleted_word(index) {
+        on_deleted_word(sign.id, sign.words[index].id)
     }
 </script>
 
@@ -66,6 +80,7 @@
             <TagList editable={true}
                      on_new={handle_new_word}
                      on_updated={handle_updated_word}
+                     on_deleted={handle_deleted_word}
                      texts={word_names}
             />
         </div>
