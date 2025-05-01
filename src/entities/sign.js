@@ -3,7 +3,7 @@
  * @property {string} id - The unique identifier for the sign (UUID).
  * @property {string} url - The url of the sign video.
  * @property {string} mime_type - The mime type of the sign video.
- * @property {string[]} words - The words associated with the sign.
+ * @property {{id: string, word: string}[]} words - The words associated with the sign.
  * @property {boolean} editable - If true, the sign can be edited.
  */
 

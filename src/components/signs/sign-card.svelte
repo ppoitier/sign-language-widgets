@@ -25,12 +25,13 @@
     /**
      * @callback UpdatedWordCallback
      * @param {string} sign_id
-     * @param {number} word_index
+     * @param {string} word_id
      * @param {string} new_word
      */
 
     /** @type {SignCardProps} */
     let {sign, on_new_word, on_updated_word, video_actions_right, video_actions_left, fluid=false} = $props()
+    let word_names = $derived(sign.words.map(w => w.word))
 
     /**
      * @param {string} new_word
@@ -44,7 +45,7 @@
      * @param {string} new_word
      */
     function handle_updated_word(index, new_word) {
-        on_updated_word(sign.id, index, new_word)
+        on_updated_word(sign.id, sign.words[index].id, new_word)
     }
 
 </script>
@@ -61,7 +62,7 @@
         </Video>
     </div>
     <div class="sign-card_actions">
-        <TagList texts={sign.words}
+        <TagList texts={word_names}
                  on_updated={handle_updated_word}
                  on_new={handle_new_word}
                  editable={sign.editable}

@@ -29,7 +29,7 @@
     /**
      * @callback UpdatedWordCallback
      * @param {string} sign_id
-     * @param {number} word_index
+     * @param {string} word_id
      * @param {string} new_word
      */
 
