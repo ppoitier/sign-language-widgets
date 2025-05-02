@@ -90,7 +90,7 @@
      */
     function cancel_edit() {
         is_editing = false
-        on_cancel()
+        on_cancel?.()
     }
 
     /**
