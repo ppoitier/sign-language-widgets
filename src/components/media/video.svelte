@@ -1,12 +1,12 @@
 <script>
-    import {onMount} from 'svelte'
+    import { onMount } from "svelte";
 
-    import 'video.js/dist/video-js.css'
-    import videojs from 'video.js'
+    import "video.js/dist/video-js.css";
+    import videojs from "video.js";
 
-    import VideoOverlay from './video-overlay.svelte'
-    import LoadingIcon from '../icons/loading-icon.svelte'
-    import NotFoundIcon from '../icons/not-found-icon.svelte'
+    import VideoOverlay from "./video-overlay.svelte";
+    import LoadingIcon from "../icons/loading-icon.svelte";
+    import NotFoundIcon from "../icons/not-found-icon.svelte";
 
     /**
      * @typedef {import('svelte').Snippet} Snippet
@@ -20,57 +20,73 @@
      */
 
     /** @type{VideoProps} */
-    let {url, mime_type, autoplay=true, loop=true, children} = $props()
+    let { url, mime_type, autoplay = true, loop = true, children } = $props();
 
     /** @type {HTMLVideoElement} */
-    let video_elem
-    let video_player
+    let video_elem = $state();
+    let video_player;
     /** @type {string} */
-    let media_state = $state('loading')
+    let media_state = $state("loading");
 
-    onMount(() => {
+    $effect(() => {
         if (!video_elem) {
-            throw new Error('Missing video element.')
+            throw new Error("Missing video element.");
+        }
+        if (!url) {
+            throw new Error("Missing video URL.");
         }
 
-        video_player = videojs(video_elem, {
-            preload: 'metadata',
-            autoplay: autoplay,
-            loop: loop,
-            controls: true,
-            playbackRates: [0.25, 0.5, 1, 2],
-            fluid: false,
-            fill: true,
-            errorDisplay: false,
-            enableSmoothSeeking: true,
-            controlBar: {
-                volumePanel: false,
+        video_player = videojs(
+            video_elem,
+            {
+                preload: "metadata",
+                autoplay: autoplay,
+                loop: loop,
+                controls: true,
+                playbackRates: [0.25, 0.5, 1, 2],
+                fluid: false,
+                fill: true,
+                errorDisplay: false,
+                enableSmoothSeeking: true,
+                controlBar: {
+                    volumePanel: false,
+                },
             },
-        }, function () {
-            media_state = 'ok'
-        })
-        video_player.on('error', () => {
-            media_state = 'error'
-            return false
-        })
-    })
+            function () {
+                media_state = "ok";
+            },
+        );
+        video_player.on("error", () => {
+            media_state = "error";
+            return false;
+        });
+        // video_player.on("playing", () => {
+        //     media_state = "ok";
+        // });
+    });
 </script>
 
-
 <div class="video-container">
-    <video src={url} class="video-js vjs-fill" muted playsinline preload="metadata" controls
-           bind:this={video_elem}></video>
+    <video
+        src={url}
+        class="video-js vjs-fill"
+        muted
+        playsinline
+        preload="metadata"
+        controls
+        bind:this={video_elem}
+    ></video>
 
-    {#if media_state === 'loading'}
+    {#if media_state === "loading"}
         <VideoOverlay>
             {#snippet icon()}
-                <LoadingIcon/>
+                <LoadingIcon />
             {/snippet}
         </VideoOverlay>
-    {:else if media_state === 'error'}
+    {:else if media_state === "error"}
         <VideoOverlay>
             {#snippet icon()}
-                <NotFoundIcon/>
+                <NotFoundIcon />
             {/snippet}
             {#snippet content()}
                 <h3>Video non disponible !</h3>
@@ -82,7 +98,6 @@
         {@render children?.()}
     </div>
 </div>
-
 
 <!--suppress CssUnusedSymbol -->
 <style>
@@ -98,7 +113,7 @@
 
     .video-container_actions-overlay {
         opacity: 1;
-        transition: opacity .2s ease-in-out;
+        transition: opacity 0.2s ease-in-out;
     }
 
     .video-container:hover > .video-container_actions-overlay {
@@ -119,7 +134,9 @@
         visibility: hidden;
 
         /* Keep the smooth transition effect */
-        transition: visibility 0.1s, opacity 0.1s;
+        transition:
+            visibility 0.1s,
+            opacity 0.1s;
     }
 
     .video-js:hover :global(.vjs-control-bar) {
