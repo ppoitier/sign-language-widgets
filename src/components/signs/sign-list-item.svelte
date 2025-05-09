@@ -14,6 +14,7 @@
      * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
      * @property {Snippet | undefined} [video_actions_right] - Additional actions displayed in the top-right corner of the sign video.
      * @property {Snippet | undefined} [video_actions_left] - Additional actions displayed in the top-left corner of the sign video.
+     * @property {Snippet | undefined} [main_actions] - Additional actions displayed in the table.
      */
 
     /**
@@ -36,7 +37,7 @@
      */
 
     /** @type {SignListItemProps} */
-    let {sign, on_new_word, on_updated_word, on_deleted_word, video_actions_right, video_actions_left} = $props()
+    let {sign, on_new_word, on_updated_word, on_deleted_word, video_actions_right, video_actions_left, main_actions} = $props()
     let word_names = $derived(sign.words.map(w => w.word))
 
     /**
@@ -62,7 +63,7 @@
     }
 </script>
 
-<tr class="sign-list-item">
+<tr class="sign-list-item" class:highlighted={sign.highlighted}>
     <td>
         <div class="sign-list-item_preview">
             <Video mime_type={sign.mime_type} url={sign.url}>
@@ -87,12 +88,19 @@
     </td>
     <td>
         <div class="sign-list-item_actions">
+            {#if sign.with_actions}
+                {@render main_actions?.(sign.id)}
+            {/if}
         </div>
     </td>
 </tr>
 
 
 <style>
+    .sign-list-item.highlighted {
+        background: rgb(250, 224, 224);
+    }
+
     .sign-list-item_preview {
         width: 100%;
         max-width: 32rem;
@@ -102,5 +110,12 @@
     .sign-list-item_info {
         padding: 1rem .5rem;
         font-size: 1.4rem;
+    }
+
+    .sign-list-item_actions {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        padding: 1rem .5rem;
     }
 </style>

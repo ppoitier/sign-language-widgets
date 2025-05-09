@@ -14,6 +14,7 @@
      * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
      * @property {Snippet | undefined} [video_actions_right] - Video actions added to the top-right corner of the video.
      * @property {Snippet | undefined} [video_actions_left] - Video actions added to the top-left corner of the video.
+     * @property {Snippet | undefined} [bottom_right_actions] - Video actions added to the bottom-right corner of the card.
      * @property {boolean} [fluid=false] - If true, the card doesn't have a maximum width anymore.
      */
 
@@ -37,7 +38,7 @@
      */
 
     /** @type {SignCardProps} */
-    let {sign, on_new_word, on_updated_word, on_deleted_word, video_actions_right, video_actions_left, fluid=false} = $props()
+    let {sign, on_new_word, on_updated_word, on_deleted_word, video_actions_right, video_actions_left, bottom_right_actions, fluid=false} = $props()
     let word_names = $derived(sign.words.map(w => w.word))
 
     /**
@@ -64,7 +65,7 @@
 
 </script>
 
-<div class="sign-card" class:fluid>
+<div class="sign-card" class:fluid class:highlighted={sign.highlighted}>
     <div class="sign-card_preview">
         <Video url={sign.url} mime_type={sign.mime_type}>
             <VideoActions>
@@ -82,6 +83,9 @@
                  on_deleted={handle_deleted_word}
                  editable={sign.editable}
         />
+        {#if sign.with_actions}
+            {@render bottom_right_actions?.(sign.id)}
+        {/if}
     </div>
 </div>
 
@@ -100,10 +104,16 @@
         max-width: 100%;
     }
 
+    .sign-card.highlighted {
+        outline: .3rem solid red;
+    }
+
     .sign-card_actions {
         padding: .5rem 0;
         min-height: 4rem;
         font-size: 1.2rem;
+        display: flex;
+        justify-content: space-between;
     }
 </style>
 

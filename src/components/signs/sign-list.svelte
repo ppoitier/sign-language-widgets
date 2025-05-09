@@ -5,6 +5,7 @@
 
     /**
      * @typedef {import('../../entities/sign.js').Sign} Sign
+     * @typedef {import('svelte').Snippet} Snippet
      *
      * @typedef {Object} SignListProps
      * @property {Sign[]} signs - Signs that are displayed in the group.
@@ -15,6 +16,7 @@
      * @property {OnActionCallback} [on_info] - Function called when the user presses the download button on a sign.
      * @property {OnActionCallback} [on_hide] - Function called when the user presses the hide button on a sign.
      * @property {OnActionCallback} [on_add_from] - Function called when the user presses the 'add from' button on a sign.
+     * @property {Snippet | undefined} [actions]
      */
 
     /**
@@ -42,7 +44,7 @@
      */
 
     /** @type {SignListProps} */
-    let {signs, on_new_word, on_updated_word, on_deleted_word, on_download, on_info, on_hide, on_add_from} = $props()
+    let {signs, on_new_word, on_updated_word, on_deleted_word, on_download, on_info, on_hide, on_add_from, actions} = $props()
 </script>
 
 <table class="sign-list">
@@ -62,7 +64,7 @@
             <SignSecondaryActions editable={sign.editable} on_hide={() => on_hide?.(sign.id)}
                                   on_add_from={() => on_add_from?.(sign.id)}/>
         {/snippet}
-        <SignListItem {sign} {on_new_word} {on_updated_word} {on_deleted_word} {video_actions_right} {video_actions_left}/>
+        <SignListItem {sign} {on_new_word} {on_updated_word} {on_deleted_word} {video_actions_right} {video_actions_left} main_actions={actions}/>
     {/each}
     </tbody>
 </table>

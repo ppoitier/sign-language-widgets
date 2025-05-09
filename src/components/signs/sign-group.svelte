@@ -8,6 +8,7 @@
 
     /**
      * @typedef {import('../../entities/sign.js').Sign} Sign
+     * @typedef {import('svelte').Snippet} Snippet
      *
      * @typedef {Object} SignGroupProps
      * @property {Sign[]} signs - Signs that are displayed in the group.
@@ -19,6 +20,8 @@
      * @property {SignActionCallback} on_hide_sign - Function called when the user wants to hide a sign.
      * @property {SignActionCallback} on_add_from_sign - Function called when the user wants to create a new sign from a sign.
      * @property {string} [mode='grid'] - Either 'grid' mode or 'list' mode. Change the way signs are displayed.
+     * @property {Snippet | undefined} [compact_actions]
+     * @property {Snippet | undefined} [actions]
      */
 
     /**
@@ -62,6 +65,8 @@
         on_hide_sign,
         on_add_from_sign,
         mode = 'grid',
+        compact_actions,
+        actions,
     } = $props()
 
     let download_modal = $state()
@@ -93,10 +98,10 @@
 
     {#if mode === 'list'}
         <SignList {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={handle_download_button} on_info={on_sign_info}
-                  on_hide={on_hide_sign} on_add_from={on_add_from_sign}/>
+                  on_hide={on_hide_sign} on_add_from={on_add_from_sign} {actions}/>
     {:else}
         <SignGrid {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={handle_download_button} on_info={on_sign_info}
-                  on_hide={on_hide_sign} on_add_from={on_add_from_sign}/>
+                  on_hide={on_hide_sign} on_add_from={on_add_from_sign} actions={compact_actions}/>
     {/if}
 </div>
 
