@@ -34,6 +34,8 @@
      * } | null}
      */
     let recorded_video = $state(null)
+    /** @type {Recorder | null} */
+    let recorder
 
     $effect(() => {
         if (current_state === 'recording') {
@@ -44,7 +46,7 @@
                 })
                 return
             }
-            const recorder = new Recorder({stream: webcam_stream})
+            recorder = new Recorder({stream: webcam_stream})
             recorder.addEventListener('recorded', (event) => {
                 /** @type {Blob} */
                 const blob = event.detail.blob
@@ -57,15 +59,28 @@
             })
             recorder.start()
             return () => {
-                recorder.stop()
+                if (recorder) {
+                    recorder.stop()
+                }
             }
         }
     })
+
+    function handle_restart() {
+        recorded_video = null
+        current_state = 'waiting'
+    }
+
+    function handle_stop_record() {
+        if (recorder) {
+            recorder.stop()
+        }
+    }
 </script>
 
 {#snippet overlay_content()}
     {#if current_state === 'waiting'}
-        <button class="video-recording_start-button" onclick={() => (current_state = 'timer')}>Commencer
+        <button class="video-recording_button" onclick={() => (current_state = 'timer')}>Commencer
             l'enregistrement
         </button>
         <p class="video-recording_info">
@@ -84,10 +99,12 @@
                 bind:stream={webcam_stream}
         />
     {:else if (recorded_video !== null)}
-        <Video fluid={true} url={recorded_video.url} mime_type={recorded_video.mime_type}/>
+        <Video url={recorded_video.url} mime_type={recorded_video.mime_type}/>
+        <button class="video-recording_button video-recording_restart-button" onclick={handle_restart}>Recommencer</button>
     {/if}
     {#if current_state === 'recording'}
         <VideoProgressBar duration={recording_duration}/>
+        <button class="video-recording_button video-recording_stop-button" onclick={handle_stop_record}>Stopper l'enregistrement</button>
     {/if}
 </div>
 
@@ -98,7 +115,7 @@
         position: relative;
     }
 
-    .video-recording_start-button {
+    .video-recording_button {
         all: unset;
         padding: 1rem .5rem;
         font-size: 1.8rem;
@@ -110,13 +127,13 @@
         text-shadow: 1px 1px 2px black;
     }
 
-    .video-recording_start-button:focus,
-    .video-recording_start-button:hover {
+    .video-recording_button:focus,
+    .video-recording_button:hover {
         background: black;
         scale: 1.05;
     }
 
-    .video-recording_start-button:focus-visible {
+    .video-recording_button:focus-visible {
         outline: .2rem solid red;
     }
 
@@ -127,6 +144,20 @@
         font-size: 1.2rem;
         max-width: 50%;
         text-shadow: 1px 1px 2px black;
+    }
+
+    .video-recording_restart-button {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .video-recording_stop-button {
+        position: absolute;
+        bottom: 4rem;
+        right: 1rem;
+        font-size: 1.2rem;
     }
 </style>
 

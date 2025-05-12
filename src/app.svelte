@@ -1,6 +1,7 @@
 <script>
     import SignGroup from './components/signs/sign-group.svelte'
     import {Sign} from './entities/sign.js'
+    import VideoRecording from './components/interaction/video-recording.svelte'
 
     const data = [
         new Sign({
@@ -73,24 +74,27 @@
 </script>
 
 <main>
-    {#snippet test(sign_id)}
-        <div>
-            <button onclick={() => test_handler(sign_id)}>1</button>
-            <button onclick={() => test_handler(sign_id)}>2</button>
-        </div>
-    {/snippet}
+    <!--{#snippet test(sign_id)}-->
+    <!--    <div>-->
+    <!--        <button onclick={() => test_handler(sign_id)}>1</button>-->
+    <!--        <button onclick={() => test_handler(sign_id)}>2</button>-->
+    <!--    </div>-->
+    <!--{/snippet}-->
 
-    <SignGroup on_new_word={(sign_id, new_word) => console.log('new word', sign_id, new_word)}
-               on_updated_word={(sign_id, word_index, new_word) => console.log('updated word', sign_id, word_index, new_word)}
-               signs={data}
-               on_sign_info={(sign_id) => (console.log("Ask information about " + sign_id))}
-               on_sign_download={(sign_id, extension) => (console.log("Wants to download sign " + sign_id + '.' + extension))}
-               on_deleted_word={() => {}}
-               on_hide_sign={() => {}}
-               on_add_from_sign={() => {}}
-               actions={test}
-               compact_actions={test}
-    />
+    <!--<SignGroup on_new_word={(sign_id, new_word) => console.log('new word', sign_id, new_word)}-->
+    <!--           on_updated_word={(sign_id, word_index, new_word) => console.log('updated word', sign_id, word_index, new_word)}-->
+    <!--           signs={data}-->
+    <!--           on_sign_info={(sign_id) => (console.log("Ask information about " + sign_id))}-->
+    <!--           on_sign_download={(sign_id, extension) => (console.log("Wants to download sign " + sign_id + '.' + extension))}-->
+    <!--           on_deleted_word={() => {}}-->
+    <!--           on_hide_sign={() => {}}-->
+    <!--           on_add_from_sign={() => {}}-->
+    <!--           actions={test}-->
+    <!--           compact_actions={test}-->
+    <!--/>-->
+
+    <VideoRecording on_recorded={() => {}} />
+
 </main>
 
 <style>
