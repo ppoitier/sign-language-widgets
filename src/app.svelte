@@ -2,6 +2,7 @@
     import SignGroup from './components/signs/sign-group.svelte'
     import {Sign} from './entities/sign.js'
     import VideoRecording from './components/interaction/video-recording.svelte'
+    import MultiSelectField from './components/interaction/multi-select-field.svelte'
 
     const data = [
         new Sign({
@@ -71,6 +72,25 @@
     function test_handler(sign_id) {
         console.log('test handler', sign_id)
     }
+
+    let options = $state([
+        {id: '1', name: 'Option 1', selected: false},
+        {id: '2', name: 'Option 1', selected: false},
+        {id: '3', name: 'Option 1', selected: false},
+        {id: '4', name: 'Option 1', selected: false},
+        {id: '5', name: 'Option 1', selected: false},
+        {id: '6', name: 'Option 1', selected: false},
+        {id: '7', name: 'Option 1', selected: false},
+        {id: '8', name: 'Option 1', selected: false},
+        {id: '9', name: 'Option 1', selected: false},
+        {id: '10', name: 'Option 1', selected: false},
+        {id: '11', name: 'Option 1', selected: false},
+        {id: '12', name: 'Option 1', selected: false},
+        {id: '13', name: 'Option 1', selected: false},
+        {id: '14', name: 'Option 1', selected: false},
+        {id: '15', name: 'Option 1', selected: false},
+        {id: '16', name: 'Option 1', selected: false},
+    ])
 </script>
 
 <main>
@@ -94,6 +114,8 @@
     <!--/>-->
 
     <VideoRecording on_recorded={() => {}} />
+
+    <MultiSelectField options={options} />
 
 </main>
 

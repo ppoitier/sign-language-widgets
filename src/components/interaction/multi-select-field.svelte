@@ -106,6 +106,8 @@
         top: 100%;
         left: 0;
         width: 100%;
+        max-height: 16em;
+        overflow: auto;
         padding: .4rem 0;
         background: var(--field-background);
         border: var(--field-border);
