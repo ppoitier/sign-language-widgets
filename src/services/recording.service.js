@@ -21,6 +21,17 @@ export class Recorder extends EventTarget {
     constructor({stream, max_duration = 5, bit_rate = 1_500_000}) {
         super()
         this.max_duration = max_duration
+        const mime_types = [
+            'video/webm;codecs=vp9,opus',
+            'video/webm;codecs=vp8,opus',
+            'video/webm', // Fallback
+        ]
+        const supported_mime_type = mime_types.find(type => MediaRecorder.isTypeSupported(type))
+        if (!supported_mime_type) {
+            // TODO: better error message
+            throw new Error('Unsupported browser.')
+        }
+        console.log(`Found compatible recording video CODEC: ${supported_mime_type}`)
         this.recorder = new MediaRecorder(stream, {bitsPerSecond: bit_rate, mimeType: 'video/webm'})
         this.recorder.addEventListener('dataavailable', (event) => {
             if (event.data.size > 0) {
