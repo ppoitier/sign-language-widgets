@@ -1,3 +1,14 @@
+<!--
+@component
+Records a short video from the webcam. Flow: `waiting` (start button) -> `timer` (countdown)
+-> `recording` (progress bar, stop button) -> `finished` (playback with a restart button).
+When the recording ends, `on_recorded` receives an object URL for the video.
+
+```svelte
+<VideoRecording bind:current_state on_recorded={(video) => (sign_video = video)} />
+```
+-->
+
 <script>
     import Webcam from '../media/webcam.svelte'
     import Video from '../media/video.svelte'

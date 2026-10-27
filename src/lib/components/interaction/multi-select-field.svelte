@@ -1,14 +1,31 @@
+<!--
+@component
+Dropdown with a searchable list of checkboxes. The top row toggles every option at once.
+
+Styled with the CSS variables `--field-background`, `--field-border` and `--field-active-background`.
+
+```svelte
+<MultiSelectField bind:options default_text="All tags" />
+```
+-->
+
 <script>
     import CheckboxListIcon from '../icons/checkbox-list-icon.svelte'
 
     /**
-     * @type {{
-     *     options: {id: string, name: string, selected: boolean}[]
-     *     default_text: string,
-     *     id?: string,
-     *     search_placeholder?: string,
-     * }}
+     * @typedef {Object} MultiSelectOption
+     * @property {string} id - Unique id, also used as the checkbox `id` and `name`.
+     * @property {string} name - Label displayed next to the checkbox.
+     * @property {boolean} selected - Whether the option is checked.
+     *
+     * @typedef {Object} MultiSelectFieldProps
+     * @property {MultiSelectOption[]} options - Bindable list of options. Use `bind:options` to read the selection.
+     * @property {string} [default_text='All'] - Label of the "select all" row.
+     * @property {string} [id='multi-select'] - Prefix for the ids of the "all" and search inputs. Must be unique per page.
+     * @property {string} [search_placeholder='Search entry...'] - Placeholder of the search input.
      */
+
+    /** @type {MultiSelectFieldProps} */
     let {options = $bindable(), default_text = 'All', id = 'multi-select', search_placeholder = 'Search entry...'} = $props()
 
     let opened = $state(false)

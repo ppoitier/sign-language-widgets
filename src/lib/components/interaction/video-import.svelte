@@ -1,3 +1,13 @@
+<!--
+@component
+Drop zone and file picker for importing a local video. Once a file is chosen, it is previewed
+and `on_imported` receives an object URL and the MIME type of the file.
+
+```svelte
+<VideoImport on_imported={(video) => (sign_video = video)} />
+```
+-->
+
 <script>
     import VideoFileIcon from '../icons/video-file-icon.svelte'
     import Video from '../media/video.svelte'

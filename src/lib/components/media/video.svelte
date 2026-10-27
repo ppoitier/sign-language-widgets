@@ -1,3 +1,16 @@
+<!--
+@component
+Video.js based player (muted, with playback rates 0.25x to 2x) in a 16:9 container.
+Shows a loading overlay, then an error overlay if the video cannot be played.
+Children are rendered in an overlay on top of the player, visible on hover for fine pointers.
+
+```svelte
+<Video url={video.url} mime_type={video.mime_type}>
+    <IconButton onclick={download}><DownloadIcon /></IconButton>
+</Video>
+```
+-->
+
 <script>
     import { onMount } from "svelte";
 

@@ -7,9 +7,4 @@ export default {
   compilerOptions: {
     runes: true,
   },
-  kit: {
-    files: {
-      lib: 'src'
-    }
-  }
 }

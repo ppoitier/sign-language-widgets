@@ -1,3 +1,13 @@
+<!--
+@component
+Table row (`<tr>`) showing a sign video and its associated words. It must be rendered inside a `<tbody>`.
+Words can be added, edited and deleted. Edits are reported with the sign id and the id of the changed word.
+
+```svelte
+<SignListItem {sign} {on_new_word} {on_updated_word} {on_deleted_word} />
+```
+-->
+
 <script>
     import VideoActions from '../interaction/video-actions.svelte'
     import Video from '../media/video.svelte'
@@ -8,7 +18,7 @@
      * @typedef {import('svelte').Snippet} Snippet
      *
      * @typedef {Object} SignListItemProps
-     * @property {Sign} sign - Sign displayed in the card.
+     * @property {Sign} sign - Sign displayed in the row.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
      * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.

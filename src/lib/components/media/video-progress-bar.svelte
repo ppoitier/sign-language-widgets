@@ -1,4 +1,23 @@
+<!--
+@component
+Linear progress bar animated along the bottom of its positioned parent.
+Calls `onFinished` once `duration` seconds have elapsed. Changing `duration` restarts it.
+
+Colored with the CSS variable `--progress-bar-color`.
+
+```svelte
+<VideoProgressBar duration={5} onFinished={() => console.log('done')} />
+```
+-->
+
 <script>
+    /**
+     * @typedef {Object} VideoProgressBarProps
+     * @property {number} duration - Animation length, in seconds.
+     * @property {() => void} [onFinished] - Called when the animation ends.
+     */
+
+    /** @type {VideoProgressBarProps} */
     let {duration, onFinished = () => {}} = $props()
 
     $effect(() => {

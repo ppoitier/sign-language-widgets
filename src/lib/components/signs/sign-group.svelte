@@ -1,3 +1,14 @@
+<!--
+@component
+Collection of signs with a button to switch between grid and list views.
+Also handles the download modal: `on_sign_download` receives the sign id and the chosen file extension.
+
+```svelte
+<SignGroup {signs} {on_new_word} {on_updated_word} {on_deleted_word}
+           {on_sign_download} {on_sign_info} {on_hide_sign} {on_add_from_sign} />
+```
+-->
+
 <script>
     import SignGrid from './sign-grid.svelte'
     import SignList from './sign-list.svelte'
@@ -19,9 +30,9 @@
      * @property {SignActionCallback} on_sign_info - Function called when the user wants information about a sign.
      * @property {SignActionCallback} on_hide_sign - Function called when the user wants to hide a sign.
      * @property {SignActionCallback} on_add_from_sign - Function called when the user wants to create a new sign from a sign.
-     * @property {string} [mode='grid'] - Either 'grid' mode or 'list' mode. Change the way signs are displayed.
-     * @property {Snippet | undefined} [compact_actions]
-     * @property {Snippet | undefined} [actions]
+     * @property {'grid' | 'list'} [mode='grid'] - Initial display mode. The user can switch it with the button.
+     * @property {Snippet | undefined} [compact_actions] - Extra actions for each sign in grid mode (bottom-right of the card).
+     * @property {Snippet | undefined} [actions] - Extra actions for each sign in list mode (last column of the row).
      */
 
     /**

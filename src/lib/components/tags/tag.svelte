@@ -1,4 +1,14 @@
+<!--
+@component
+Read-only colored label. Colored with the CSS variable `--tag-color`.
+
+```svelte
+<Tag text="hello" />
+```
+-->
+
 <script>
+    /** @type {{text?: string}} */
     let {text = 'example of name'} = $props()
 </script>
 

@@ -1,5 +1,5 @@
 import { mount } from 'svelte'
-import './global.css'
+import './lib/global.css'
 
 /** @typedef {import('svelte').mount} Component */
 

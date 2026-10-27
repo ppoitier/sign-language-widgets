@@ -1,3 +1,14 @@
+<!--
+@component
+Live preview of the user's webcam (front camera, no audio). Asks for permission on mount and
+releases the camera on destroy. Shows a loading overlay, then an error overlay if the webcam is unavailable.
+Failures are also reported through `error_store`.
+
+```svelte
+<Webcam bind:stream fluid />
+```
+-->
+
 <script>
     import VideoOverlay from './video-overlay.svelte'
     import NotFoundIcon from '../icons/not-found-icon.svelte'

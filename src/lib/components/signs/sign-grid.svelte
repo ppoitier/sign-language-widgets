@@ -1,5 +1,15 @@
+<!--
+@component
+Responsive grid of `SignCard`s. Each card gets download/info buttons (top-right)
+and hide/add-from buttons (top-left), wired to the `on_*` callbacks with the sign id.
+
+```svelte
+<SignGrid {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={download} />
+```
+-->
+
 <script>
-    import SignListItem from './sign-list-item.svelte'
+    import SignCard from './sign-card.svelte'
     import SignPrimaryActions from './sign-primary-actions.svelte'
     import SignSecondaryActions from './sign-secondary-actions.svelte'
 
@@ -7,16 +17,16 @@
      * @typedef {import('../../entities/sign.js').Sign} Sign
      * @typedef {import('svelte').Snippet} Snippet
      *
-     * @typedef {Object} SignListProps
-     * @property {Sign[]} signs - Signs that are displayed in the group.
+     * @typedef {Object} SignGridProps
+     * @property {Sign[]} signs - Signs displayed in the grid.
      * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
      * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
      * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
-     * @property {OnActionCallback} [on_download] - Function called when the user presses the info button on a sign.
-     * @property {OnActionCallback} [on_info] - Function called when the user presses the download button on a sign.
+     * @property {OnActionCallback} [on_download] - Function called when the user presses the download button on a sign.
+     * @property {OnActionCallback} [on_info] - Function called when the user presses the info button on a sign.
      * @property {OnActionCallback} [on_hide] - Function called when the user presses the hide button on a sign.
      * @property {OnActionCallback} [on_add_from] - Function called when the user presses the 'add from' button on a sign.
-     * @property {Snippet | undefined} [actions]
+     * @property {Snippet | undefined} [actions] - Extra actions displayed in the bottom-right corner of each card.
      */
 
     /**
@@ -43,19 +53,11 @@
      * @param {string} sign_id
      */
 
-    /** @type {SignListProps} */
+    /** @type {SignGridProps} */
     let {signs, on_new_word, on_updated_word, on_deleted_word, on_download, on_info, on_hide, on_add_from, actions} = $props()
 </script>
 
-<table class="sign-list">
-    <thead>
-    <tr>
-        <th scope="col">Aperçu</th>
-        <th scope="col">Mots associés</th>
-        <th scope="col"></th>
-    </tr>
-    </thead>
-    <tbody>
+<div>
     {#each signs as sign}
         {#snippet video_actions_right()}
             <SignPrimaryActions on_download={() => on_download?.(sign.id)} on_info={() => on_info?.(sign.id)}/>
@@ -64,50 +66,21 @@
             <SignSecondaryActions editable={sign.editable} on_hide={() => on_hide?.(sign.id)}
                                   on_add_from={() => on_add_from?.(sign.id)}/>
         {/snippet}
-        <SignListItem {sign} {on_new_word} {on_updated_word} {on_deleted_word} {video_actions_right} {video_actions_left} main_actions={actions}/>
+        <SignCard {sign} {on_new_word} {on_updated_word} {on_deleted_word} {video_actions_right} {video_actions_left} bottom_right_actions={actions}/>
     {/each}
-    </tbody>
-</table>
+</div>
 
 <style>
-    .sign-list {
-        width: 100%;
-        font-size: 1.2rem;
-        border-collapse: collapse;
-    }
+    div {
+        /* Calculated minimum width for items and ensure a strict max number of columns */
+        --item-min-width: calc((var(--container-max-width) - (var(--grid-max-nb-columns) - 1) * var(--grid-gap)) / var(--grid-max-nb-columns));
+        --item-min-height: calc(9 / 16 * var(--item-min-width));
 
-    .sign-list th {
-        padding: .5rem;
-        border-top: .1rem solid lightgray;
-        border-bottom: .25rem solid lightgray;
-        font-weight: bold;
-        letter-spacing: .2rem;
-    }
+        display: grid;
+        gap: var(--grid-gap);
+        grid-template-columns: repeat(auto-fit, minmax(var(--item-min-width), 1fr));
 
-    .sign-list :global(tr:nth-child(even)) {
-        background-color: #ececec;
-    }
-
-    .sign-list :global(td) {
-        border-bottom: .15rem solid lightgray;
-    }
-
-    .sign-list :global(tr:last-child > td) {
-        border-bottom: none;
-    }
-
-    .sign-list th:nth-child(1),
-    .sign-list :global(td:nth-child(1)) {
-        width: 40%;
-    }
-
-    .sign-list :global(td:nth-child(2)) {
-        vertical-align: top;
-        text-align: left;
-    }
-
-    .sign-list th:nth-child(3),
-    .sign-list :global(td:nth-child(3)) {
-        width: 5rem;
+        max-width: var(--container-max-width);
+        margin: 0 auto;
     }
 </style>

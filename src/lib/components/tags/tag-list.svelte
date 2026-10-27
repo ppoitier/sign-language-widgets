@@ -1,3 +1,12 @@
+<!--
+@component
+List of tags. When `editable`, tags can be renamed or deleted, and a button adds new ones.
+
+```svelte
+<TagList texts={words} editable {on_new} {on_updated} {on_deleted} />
+```
+-->
+
 <script>
     import Tag from './tag.svelte'
     import EditableTag from './editable-tag.svelte'
@@ -27,15 +36,15 @@
      */
 
     /**
-     * Props for the tag list component.
-     * @type {{
-     *  texts: string[],       // Description: Array of tags.
-     *  on_updated: UpdatedHandler,  // Description: Callback function invoked when a tag is edited and saved.
-     *  on_new: AddHandler,    // Description: Callback function invoked when a tag is added.
-     *  on_deleted: DeletedHandler, // Description: Callback function invoked when a tag is deleted.
-     *  editable?: boolean,    // Description: If true, allows tags to be edited. Defaults to false.
-     * }}
+     * @typedef {Object} TagListProps
+     * @property {string[]} texts - Text of each tag.
+     * @property {UpdatedHandler} on_updated - Called when a tag is edited and saved.
+     * @property {AddHandler} on_new - Called when a tag is added.
+     * @property {DeletedHandler} on_deleted - Called when a tag is deleted.
+     * @property {boolean} [editable=false] - If true, allows tags to be edited, deleted and added.
      */
+
+    /** @type {TagListProps} */
     let {texts, on_updated, on_new, on_deleted, editable = false} = $props()
     /** @type {boolean} */
     let editing_new_tag = $state(false)

@@ -1,3 +1,12 @@
+<!--
+@component
+Tag whose text can be edited in place.
+
+```svelte
+<EditableTag text="hello" on_save={(text) => rename(text)} on_delete={remove} />
+```
+-->
+
 <script>
     import {tick} from 'svelte'
 
@@ -9,14 +18,14 @@
      */
 
     /**
-     * Props for the tag list component.
-     * @type {{
-     *  text: string,       // Description: Text content of the tag.
-     *  on_save: SaveHandler,  // Description: Callback function invoked when a tag is edited and saved.
-     *  on_cancel?: function, // Description: Optional callback function invoked when the editing is canceled.
-     *  on_delete?: function, // Description: Optional callback function invoked when a tag is deleted.
-     * }}
+     * @typedef {Object} EditableTagProps
+     * @property {string} [text='default tag'] - Text content of the tag.
+     * @property {SaveHandler} on_save - Called when the tag is edited and saved.
+     * @property {() => void} [on_cancel] - Called when the editing is canceled.
+     * @property {() => void} [on_delete] - Called when the tag is deleted.
      */
+
+    /** @type {EditableTagProps} */
     let {
         text = 'default tag',
         on_save,

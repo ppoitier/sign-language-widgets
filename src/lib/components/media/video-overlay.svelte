@@ -1,3 +1,16 @@
+<!--
+@component
+Dark full-size layer displayed over a positioned parent (e.g. a video) with a centered icon and/or content.
+Renders nothing visible when neither snippet is given.
+
+```svelte
+<VideoOverlay>
+    {#snippet icon()}<LoadingIcon />{/snippet}
+    {#snippet content()}<h3>Loading...</h3>{/snippet}
+</VideoOverlay>
+```
+-->
+
 <script>
     /**
      * @import { Snippet } from 'svelte'

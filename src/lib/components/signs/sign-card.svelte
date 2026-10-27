@@ -1,3 +1,13 @@
+<!--
+@component
+Card showing a sign video and its associated words, which can be added, edited and deleted.
+Edits are reported with the sign id and the id of the changed word.
+
+```svelte
+<SignCard {sign} {on_new_word} {on_updated_word} {on_deleted_word} fluid />
+```
+-->
+
 <script>
     import VideoActions from "../interaction/video-actions.svelte";
     import Video from "../media/video.svelte"
