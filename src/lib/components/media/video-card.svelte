@@ -29,6 +29,9 @@ Card with a 16:9 video (see `VideoPlayer`) on top and free content below.
      * @property {Snippet | undefined} [video_actions_right] - Actions added to the top-right corner of the video.
      * @property {Snippet | undefined} [error] - Message shown when the video cannot be played. Defaults to "Vidéo non disponible !".
      * @property {number} [current_time=0] - Playback position in seconds. Bindable: follows the playback, and setting it jumps to that time.
+     * @property {import('./video-marker.js').Marker[]} [markers=[]] - Markers shown on the timeline (see `VideoPlayer`).
+     * @property {number} [start_time=0] - Start of the playable range, in seconds.
+     * @property {number | undefined} [end_time] - End of the playable range, in seconds. Defaults to the end of the video.
      * @property {Snippet | undefined} [children] - Content of the card, below the video.
      */
 
@@ -44,12 +47,16 @@ Card with a 16:9 video (see `VideoPlayer`) on top and free content below.
         video_actions_right,
         error,
         current_time = $bindable(0),
+        markers = [],
+        start_time = 0,
+        end_time,
         children,
     } = $props()
 </script>
 
 <div class={['video-card', { fluid, highlighted }]}>
-    <VideoPlayer {src} {poster} {autoplay} {loop} {video_actions_left} {video_actions_right} {error} bind:current_time />
+    <VideoPlayer {src} {poster} {autoplay} {loop} {video_actions_left} {video_actions_right} {error}
+                 {markers} {start_time} {end_time} bind:current_time />
 
     {#if children}
         <div class="video-card_content">

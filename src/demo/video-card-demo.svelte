@@ -5,10 +5,16 @@
 
     let highlighted = $state(false)
     let current_time = $state(0)
+
+    const markers = [
+        { start: 10 },
+        { start: 12, color: '#ff6b6b' },
+        { start: 15, end: 20, color: '#4dabf7' },
+    ]
 </script>
 
 <div class="demo">
-    <VideoCard src={video_url} {highlighted} bind:current_time>
+    <VideoCard src={video_url} {highlighted} {markers} start_time={5} end_time={25} bind:current_time>
         {#snippet video_actions_right()}
             <button onclick={() => highlighted = !highlighted}>Surligner</button>
         {/snippet}
