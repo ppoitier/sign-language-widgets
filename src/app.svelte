@@ -1,6 +1,5 @@
 <script>
-    import AnnotationTimelineDemo from './demo/AnnotationTimelineDemo.svelte'
+    import VideoCardDemo from './demo/video-card-demo.svelte'
 </script>
 
-
-<AnnotationTimelineDemo />
+<VideoCardDemo />

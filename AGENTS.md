@@ -21,8 +21,26 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 - **Use the Svelte MCP server** when writing or editing Svelte code: look up docs with `get-documentation` / `list-sections`, and run `svelte-autofixer` on every component before finishing (re-run after fixes).
 - **Keep code simple.** No speculative abstractions. Use `async/await` when it makes the code clearer.
 - **JavaScript + JSDoc, no TypeScript files.** `jsconfig.json` has `checkJs: true`, so annotate props, state, functions and fetched data with JSDoc (`@typedef`, `@type`, `@param`, `@returns`) to avoid IDE type errors. Reuse typedefs via `import('...').Type`.
-- Naming in existing code: `snake_case` for functions in demos, `camelCase` for props and component state.
+- **Naming: use `snake_case` whenever possible** (props, callbacks like `on_new_word`, state, functions, new file names in kebab-case). Existing code is inconsistent (the annotation components use PascalCase file names and `camelCase` props such as `onFinished`, `currentTime`); unify it to `snake_case` when reworking a component, and update its usages (demos, `index.js`).
 - Indentation: 4 spaces in `.svelte` files, no semicolons.
+- UI strings are in French.
+
+## Documentation
+
+- Every exported component starts with an `<!-- @component -->` header: a short description plus a usage example in a `svelte` code block.
+- Props get a `@typedef` with one `@property` per prop (`[name=default]` for optional ones), applied with `/** @type {Props} */` on the `$props()` destructuring.
+- Keep docs in sync when props change.
+
+## Verification
+
+- No tests or linter. After changes run `pnpm build` (packages `src/lib`) and check the demo compiles: `npx vite build --outDir "$TEMP/slw-demo-check"`.
+
+## Known issues to fix when reworking components
+
+- `editable-tag`: `$state(text)` only captures the initial value of `text`.
+- `tag-list`, `multi-select-field`: `{#each}` blocks have no keys.
+- `sign-group`: reassigns the `mode` prop; it should be `$bindable`.
+- `multi-select-field`: the toggle button can submit a parent form (TODO in code); `class:opened` could use a `class` array.
 
 ## Static assets in demos
 
@@ -32,5 +50,7 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 ## Packaging notes
 
+- Keep `typescript` below 7: `svelte-package` (via `svelte2tsx`) refuses TypeScript 7.
+- Video player: Video.js 10 through `@videojs/html`, with our own skin in `media/video-player.svelte` (unstyled `media-*` UI elements, French labels via `<media-i18n lang="fr">`). Don't use the packaged `<video-skin>`: its shadow DOM can't be restyled (e.g. the controls gradient). In component CSS, wrap runtime `data-*` selectors in `:global(...)`. Playback rates aren't configurable in Video.js yet, hence the custom speed button. `video.svelte` and `webcam.svelte` still use the Video.js 8 API and are broken until they are remade.
 - `package.json` publishes `dist` only; `exports` point at `dist` (`svelte` + `types` conditions). Consumers: `import { Video } from 'sign-language-widgets'` and `import 'sign-language-widgets/global.css'`.
 - Sample data in `public/continuous-sample/`: `annotations.json` has tiers `right_hand`, `left_hand`, `both_hands`, `signer`; each annotation has `start_ms`, `end_ms`, `gloss` (+ frame info, lemma, sign_type...). Times are in milliseconds; the timeline expects seconds.
