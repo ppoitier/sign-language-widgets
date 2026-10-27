@@ -1,8 +1,10 @@
 export {default as Video} from './components/media/video.svelte'
 export {default as VideoOverlay} from './components/media/video-overlay.svelte'
 export {default as Webcam} from './components/media/webcam.svelte'
+export {default as WebcamPreview} from './components/media/webcam-preview.svelte'
 export {default as VideoProgressBar} from './components/media/video-progress-bar.svelte'
 export {default as VideoPlayer} from './components/media/video-player.svelte'
+export {default as MediaCard} from './components/media/media-card.svelte'
 export {default as VideoCard} from './components/media/video-card.svelte'
 
 export {default as VideoRecording} from './components/interaction/video-recording.svelte'

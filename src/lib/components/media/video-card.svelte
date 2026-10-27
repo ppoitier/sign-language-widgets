@@ -1,6 +1,7 @@
 <!--
 @component
 Card with a 16:9 video (see `VideoPlayer`) on top and free content below.
+Shortcut for a `MediaCard` holding a `VideoPlayer`.
 
 ```svelte
 <VideoCard src={video.url} highlighted={is_selected}>
@@ -13,6 +14,7 @@ Card with a 16:9 video (see `VideoPlayer`) on top and free content below.
 -->
 
 <script>
+    import MediaCard from './media-card.svelte'
     import VideoPlayer from './video-player.svelte'
 
     /**
@@ -54,38 +56,9 @@ Card with a 16:9 video (see `VideoPlayer`) on top and free content below.
     } = $props()
 </script>
 
-<div class={['video-card', { fluid, highlighted }]}>
-    <VideoPlayer {src} {poster} {autoplay} {loop} {video_actions_left} {video_actions_right} {error}
-                 {markers} {start_time} {end_time} bind:current_time />
-
-    {#if children}
-        <div class="video-card_content">
-            {@render children()}
-        </div>
-    {/if}
-</div>
-
-<style>
-    .video-card {
-        width: 100%;
-        min-width: var(--card-min-width);
-        max-width: var(--card-max-width);
-        overflow: hidden;
-        border-radius: 0.8rem;
-        border: 0.1rem solid var(--card-border);
-        background-color: var(--card-background);
-    }
-
-    .video-card.fluid {
-        max-width: 100%;
-    }
-
-    .video-card.highlighted {
-        outline: 0.3rem solid red;
-    }
-
-    .video-card_content {
-        padding: 0.5rem;
-        font-size: 1.2rem;
-    }
-</style>
+<MediaCard {fluid} {highlighted} {children}>
+    {#snippet media()}
+        <VideoPlayer {src} {poster} {autoplay} {loop} {video_actions_left} {video_actions_right} {error}
+                     {markers} {start_time} {end_time} bind:current_time />
+    {/snippet}
+</MediaCard>

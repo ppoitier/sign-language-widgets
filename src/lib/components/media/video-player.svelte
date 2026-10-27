@@ -52,6 +52,7 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
     import '@videojs/html/ui/status-announcer'
 
     import VideoOverlay from './video-overlay.svelte'
+    import { format_time } from './format-time.js'
     import NotFoundIcon from '../icons/not-found-icon.svelte'
     import LoadingIcon from '../icons/loading-icon.svelte'
 
@@ -135,17 +136,6 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
      */
     function is_in_range(marker) {
         return marker.start <= range_end && (marker.end ?? marker.start) >= start_time
-    }
-
-    /**
-     * @param {number} seconds
-     * @returns {string} Time formatted as `m:ss`.
-     */
-    function format_time(seconds) {
-        if (!Number.isFinite(seconds) || seconds < 0) return '0:00'
-        const minutes = Math.floor(seconds / 60)
-        const rest = Math.floor(seconds % 60)
-        return `${minutes}:${String(rest).padStart(2, '0')}`
     }
 
     /** @type {string | undefined} */
