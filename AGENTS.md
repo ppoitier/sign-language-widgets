@@ -9,7 +9,7 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 ## Layout
 
-- `src/lib/` — the published library (only `dist`, built from it, is shipped). Entry point: `src/lib/index.js`; also `global.css`.
+- `src/lib/` — the published library (only `dist`, built from it, is shipped). Entry point: `src/lib/index.js`; also `global.css` and `base.css` (see Styles for apps).
 - `src/lib/components/` — library components (e.g. `annotations/annotation-timeline.svelte`, `timeline-utils.js` holds shared typedefs)
 - `src/lib/services/` — non-UI logic used by the components (see Architecture)
 - `src/demo/`, `src/app.svelte`, `src/app.js` — demo app, NOT part of the package. Demos import from `../lib/...`.
@@ -44,10 +44,12 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 - No tests or linter. After changes run `pnpm build` (packages `src/lib`) and check the demo compiles: `npx vite build --outDir "$TEMP/slw-demo-check"`.
 
-## Known issues to fix when reworking components
+## Styles for apps
 
-- `multi-select-field`: `{#each}` blocks have no keys.
-- `multi-select-field`: the toggle button can submit a parent form (TODO in code); `class:opened` could use a `class` array.
+- Components must not style anything outside themselves: no `:global(...)` selector on bare elements or attributes (only `:global` around runtime `data-*` attributes of their own elements, or on their own children).
+- `global.css` (required by the components): `:root { font-size: 62.5% }` (all sizes are in rem, 1rem = 10px), `box-sizing: border-box`, CSS variables. `base.css` (optional): Google Fonts + margin/padding reset. Components must not rely on `base.css`: set `margin: 0` / `padding: 0` where needed (`<ul>`, headings, paragraphs).
+- Buttons always get `type="button"` (apps may place components inside a form); no `<form method="dialog">` for the same reason.
+- Icons are decorative (`aria-hidden="true"`, `fill="currentColor"`, 1em): the button holding one gets a label.
 
 ## Demos
 
@@ -94,8 +96,9 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 ## Annotation timeline (`src/lib/components/annotations/`)
 
-- `annotation-timeline.svelte` (`AnnotationTimeline`, the only exported one): `timeline-overview.svelte` (full duration + `timeline-brush.svelte`) above one `annotation-tier.svelte` per tier (bars are `annotation.svelte`, playhead `playhead.svelte`). Props: `duration`, `tiers`, bindable `current_time`, `follow_playback`, sizing props, callbacks `on_annotation_click`, `on_seek`, `on_selection_change`.
-- `selected_range` (the brushed range) is a writable `$derived`: reset when `duration` / `max_selection_span` change, reassigned by the brush, tier drags and the `follow_playback` effect (its "state assigned in `$effect`" autofixer suggestion is expected).
+- `annotation-timeline.svelte` (`AnnotationTimeline`, the only exported one): `timeline-overview.svelte` (full duration + `timeline-brush.svelte`) above one `annotation-tier.svelte` per tier (bars are `annotation.svelte`, playhead `playhead.svelte`). Props: `duration`, `tiers`, bindable `current_time`, `follow_playback`, sizing props, callbacks `on_annotation_click`, `on_seek`, `on_selection_change`. Without `width`, it fills its container (`bind:clientWidth`); nothing is drawn while `duration` is 0 (the scales would divide by 0).
+- Drags (tier background, brush) listen on `<svelte:window>` (pointermove / pointerup / pointercancel, ignored while no drag is active) and use `touch-action: none`, so they work on touch screens and are cleaned up on destroy.
+- `selected_range` (the brushed range) is a writable `$derived`: starts at `[0, default_selection_span ?? max_selection_span]` (clamped to the duration and the max span), reset when `duration` / `max_selection_span` / `default_selection_span` change, reassigned by the brush, tier drags and the `follow_playback` effect (its "state assigned in `$effect`" autofixer suggestion is expected).
 - `annotation.svelte` fits its label by measuring in a separate hidden `<text>`: never set `textContent` on an element whose content Svelte renders.
 - Typedefs (`Annotation`, `Tier`, `SeekEvent`, `LinearScale`) and helpers in `timeline-utils.js`.
 - Demo `demo/annotation-timeline-demo.svelte`: a `VideoPlayer` of the sample video and the timeline share one `current_time` state (both bindable, in seconds), so each follows the other; clicking an annotation seeks to its start. The timeline's `duration` comes from the last annotation's end (`VideoPlayer` doesn't expose the video's duration).
@@ -108,6 +111,7 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 - Keep `typescript` below 7: `svelte-package` (via `svelte2tsx`) refuses TypeScript 7.
 - `peerDependencies.svelte` follows a recent Svelte (`^5.57.0`): the apps using the library stay on the latest Svelte, so recent features (e.g. attachments `{@attach}`) are allowed. Raise it when a component needs a newer feature, and keep it in sync with the `svelte` devDependency.
-- Shared typedefs live in `.js` files (e.g. `media/video-marker.js`), not in `.svelte` files, so the generated `.d.ts` can import them.
-- `package.json` publishes `dist` only; `exports` point at `dist` (`svelte` + `types` conditions). Consumers: `import { VideoPlayer } from 'sign-language-widgets'` and `import 'sign-language-widgets/global.css'`.
+- Shared typedefs live in `.js` files (e.g. `media/video-marker.js`), not in `.svelte` files, so the generated `.d.ts` can import them. Typedefs of data given by apps are re-exported from `index.js` (top-level `@typedef`s become `export type` in `dist/index.d.ts`): add new ones there.
+- `package.json` publishes `dist` only; `exports` point at `dist` (`svelte` + `types` conditions). Consumers: `import { VideoPlayer } from 'sign-language-widgets'`, `import 'sign-language-widgets/global.css'` and optionally `'sign-language-widgets/base.css'`. Bump the major version on breaking changes (renamed props, files, exports).
+- `README.md` is the documentation for app developers: keep it in sync (CSS imports, components list, exported types).
 - Sample data in `public/continuous-sample/`: `annotations.json` has tiers `right_hand`, `left_hand`, `both_hands`, `signer`; each annotation has `start_ms`, `end_ms`, `gloss` (+ frame info, lemma, sign_type...). Times are in milliseconds; the timeline expects seconds.

@@ -24,9 +24,6 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
-      uuid:
-        specifier: ^14.0.3
-        version: 14.0.3
       vite:
         specifier: ^8.3.5
         version: 8.3.5
@@ -482,10 +479,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  uuid@14.0.3:
-    resolution: {integrity: sha512-Sc5u1VVln93y1Xnz4R+CunOZc7R9LUcTmhj7Rc7Eg3HVcf7rVn2FOoa812fe0W8p3jD7xeoGSYbfqCGGH2B6xw==}
-    hasBin: true
-
   video.js@10.2.0:
     resolution: {integrity: sha512-YoezDYXY6iDkuhLGnyOz96XBKjwB0cQbPNq5ck1FAf2JcqfLnnwkNQ4ofbwhlpAM55RFp6VDhSvKe5wVcFV11Q==}
 
@@ -879,8 +872,6 @@ snapshots:
       picomatch: 4.0.7
 
   typescript@6.0.3: {}
-
-  uuid@14.0.3: {}
 
   video.js@10.2.0: {}
 
