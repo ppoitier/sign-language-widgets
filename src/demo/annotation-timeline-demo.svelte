@@ -81,11 +81,12 @@
     {:else if tiers.length === 0}
         <p>Chargement des annotations…</p>
     {:else}
-        <!-- Clicking an annotation jumps the video to its start. -->
+        <!-- Clicking an annotation jumps the video to its start. Shows 10 s at first, up to 60 s (default max). -->
         <AnnotationTimeline
             {duration}
             {tiers}
             bind:current_time
+            default_selection_span={10}
             on_annotation_click={(a) => current_time = a.start}
         />
     {/if}

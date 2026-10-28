@@ -6,6 +6,8 @@ Clicking a row seeks the playhead, dragging on it selects a new range.
 Times are in seconds (any unit works, as long as `duration` and the annotations use the same).
 The timeline fills the width of its container, unless `width` is given. Nothing is drawn while `duration` is 0
 (e.g. until the video metadata is loaded).
+The selected range starts at `default_selection_span` (defaults to `max_selection_span`): the user can then widen it
+up to `max_selection_span`.
 
 ```svelte
 <script>
@@ -16,7 +18,7 @@ The timeline fills the width of its container, unless `width` is given. Nothing 
     ]
 </script>
 
-<AnnotationTimeline duration={60} {tiers} bind:current_time
+<AnnotationTimeline duration={60} {tiers} bind:current_time default_selection_span={10}
                     on_annotation_click={(annotation) => current_time = annotation.start} />
 ```
 -->
@@ -54,6 +56,7 @@ The timeline fills the width of its container, unless `width` is given. Nothing 
      * @property {number}   [brush_handle_width=8]           Width of each brush handle, px.
      * @property {number}   [keyboard_step=1]                Arrow-key seek/brush step, in time units.
      * @property {number}   [max_selection_span=60]          Max length of the selected range, in time units.
+     * @property {number}   [default_selection_span]         Length of the selected range at start, in time units. Defaults to `max_selection_span`.
      * @property {number}   [label_min_pixels_per_unit=3]    Below this zoom (px per time-unit), all annotation labels are hidden.
      * @property {string[]} [color_palette]                  Palette used for per-label colors.
      * @property {boolean}  [show_tier_names=true]           Render each tier's name chip inside its row.
@@ -79,6 +82,7 @@ The timeline fills the width of its container, unless `width` is given. Nothing 
         brush_handle_width = 8,
         keyboard_step = 1,
         max_selection_span = 60,
+        default_selection_span,
         label_min_pixels_per_unit = 3,
 
         // Styling.
@@ -92,11 +96,11 @@ The timeline fills the width of its container, unless `width` is given. Nothing 
     } = $props()
 
     // --------- State ---------
-    // Starts at the beginning of the timeline, reset when the duration or the max span change;
-    // the brush, the tiers and the playback-following effect then reassign it.
+    // Starts at the beginning of the timeline with the default span (within the duration and the max span),
+    // reset when one of them changes; the brush, the tiers and the playback-following effect then reassign it.
     /** @type {[number, number]} */
     let selected_range = $derived(
-        clamp_range_span([0, duration], duration, 0, max_selection_span, 'start')
+        clamp_range_span([0, default_selection_span ?? max_selection_span], duration, 0, max_selection_span, 'start')
     )
 
     // Width of the container, used when `width` isn't given.
