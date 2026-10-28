@@ -208,6 +208,11 @@ Camera constraints apply to the preview and the recording; recording constraints
         text-shadow: 0.1rem 0.1rem 0.2rem black;
     }
 
+    /* Spaced by the gap of `.center`. */
+    .center p {
+        margin: 0;
+    }
+
     .backdrop {
         background-color: rgb(0 0 0 / 0.4);
     }

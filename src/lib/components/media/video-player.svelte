@@ -10,7 +10,7 @@ Markers (points or ranges, in seconds) can be shown on the timeline; their defau
 ```svelte
 <VideoPlayer src={video.url}>
     {#snippet video_actions_right()}
-        <IconButton onclick={download}><DownloadIcon /></IconButton>
+        <VideoAction label="Télécharger" onclick={download}><DownloadIcon /></VideoAction>
     {/snippet}
     {#snippet error()}
         <h3>Fichier introuvable</h3>

@@ -100,8 +100,6 @@
         drag_mode = mode
         drag_start_client_x = event.clientX
         drag_start_range = [...selected_range]
-        window.addEventListener('pointermove', handle_drag)
-        window.addEventListener('pointerup', end_drag)
     }
 
     /** @param {PointerEvent} event */
@@ -112,10 +110,9 @@
     }
 
     function end_drag() {
+        if (!drag_mode) return
         drag_mode = null
         drag_start_range = null
-        window.removeEventListener('pointermove', handle_drag)
-        window.removeEventListener('pointerup', end_drag)
         on_change_commit?.(selected_range)
     }
 
@@ -131,6 +128,10 @@
         on_change_commit?.(selected_range)
     }
 </script>
+
+<!-- Window listeners: the drag goes on outside the brush. They do nothing while no drag is active.
+     A cancelled pointer (e.g. the browser took over a touch) ends the drag where it is. -->
+<svelte:window onpointermove={handle_drag} onpointerup={end_drag} onpointercancel={end_drag} />
 
 <!-- Body: drag to pan the selection. -->
 <rect
@@ -204,7 +205,14 @@
     .brush-handle:hover,
     .brush-handle.dragging { fill-opacity: 1; }
 
-    :global([tabindex]:focus-visible) {
+    /* Dragging on touch screens moves the brush instead of scrolling the page. */
+    .brush-body,
+    .brush-handle {
+        touch-action: none;
+    }
+
+    .brush-body:focus-visible,
+    .brush-handle:focus-visible {
         outline: 2px solid #2563eb;
         outline-offset: 2px;
     }

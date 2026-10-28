@@ -1,5 +1,6 @@
 <script>
     import VideoCard from '../lib/components/media/video-card.svelte'
+    import VideoAction from '../lib/components/media/video-action.svelte'
 
     const video_url = `${import.meta.env.BASE_URL}continuous-sample/CLSFBI0110A_S002_B.mp4`
 
@@ -16,7 +17,7 @@
 <div class="demo">
     <VideoCard src={video_url} {highlighted} {markers} start_time={5} end_time={25} bind:current_time>
         {#snippet video_actions_right()}
-            <button onclick={() => highlighted = !highlighted}>Surligner</button>
+            <VideoAction onclick={() => highlighted = !highlighted}>Surligner</VideoAction>
         {/snippet}
         <p>Position : {current_time.toFixed(2)} s</p>
         <button onclick={() => current_time = 10}>Aller à 10 s</button>

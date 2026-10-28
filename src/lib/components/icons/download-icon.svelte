@@ -1,3 +1,13 @@
+<!--
+@component
+Icon: Arrow to a line (download). Sized at `1em` and colored with `currentColor`, so it follows the font of its parent.
+Decorative (`aria-hidden`): give a label to the button that holds it.
+
+```svelte
+<VideoAction label="..."><DownloadIcon /></VideoAction>
+```
+-->
+
 <script>
     /*
     Pictogrammers Free License
@@ -16,7 +26,7 @@
      */
 </script>
 
-<svg class="download-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<svg class="download-icon" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
 </svg>
 

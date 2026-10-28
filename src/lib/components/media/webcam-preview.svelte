@@ -13,7 +13,7 @@ mirrored (for text or buttons); unlike content around the component, it stays vi
 ```svelte
 <WebcamPreview bind:stream bind:video_element>
     {#snippet video_actions_right()}
-        <IconButton onclick={start_recording}><AddVideoIcon /></IconButton>
+        <VideoAction label="Ajouter un signe" onclick={add_sign}><AddVideoIcon /></VideoAction>
     {/snippet}
     <canvas bind:this={landmarks_canvas}></canvas>
 </WebcamPreview>

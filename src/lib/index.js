@@ -1,3 +1,17 @@
+// Types of the data given to the components, for apps (JSDoc: `import('sign-language-widgets').SignItem`).
+/**
+ * @typedef {import('./components/media/video-marker.js').Marker} Marker
+ * @typedef {import('./components/tags/tag-item.js').TagItem} TagItem
+ * @typedef {import('./components/signs/sign-item.js').SignItem} SignItem
+ * @typedef {import('./components/annotations/timeline-utils.js').Annotation} Annotation
+ * @typedef {import('./components/annotations/timeline-utils.js').Tier} Tier
+ * @typedef {import('./components/annotations/timeline-utils.js').SeekEvent} SeekEvent
+ * @typedef {import('./components/interaction/multi-select-option.js').MultiSelectOption} MultiSelectOption
+ * @typedef {import('./services/recording.service.js').RecordingOptions} RecordingOptions
+ * @typedef {import('./services/recording.service.js').RecordedVideo} RecordedVideo
+ * @typedef {import('./services/recording.service.js').Recording} Recording
+ */
+
 export {default as VideoOverlay} from './components/media/video-overlay.svelte'
 export {default as WebcamPreview} from './components/media/webcam-preview.svelte'
 export {default as VideoPlayer} from './components/media/video-player.svelte'

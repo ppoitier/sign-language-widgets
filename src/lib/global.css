@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+/*
+Required by the components: import it once in the app (`import 'sign-language-widgets/global.css'`).
+- `font-size: 62.5%` on the root: the components are sized in rem, with 1rem = 10px.
+- `box-sizing: border-box`: the components' widths include their padding and border.
+- The CSS variables (colors, card sizes...): override them in the app to change the theme.
+The font and the margin/padding reset are optional, in `base.css`.
+*/
 
 :root {
     font-size: 62.5%;
@@ -23,17 +29,8 @@
     --active-action-color: rgba(1, 178, 175, 1.0);
 }
 
-* {
-    padding: 0;
-    margin: 0;
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-}
-
-body {
-    font-family: "Open Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-    font-variation-settings: "wdth" 100;
-    font-size: 1.6rem;
 }

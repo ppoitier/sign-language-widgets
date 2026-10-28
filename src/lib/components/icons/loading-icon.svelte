@@ -1,5 +1,15 @@
+<!--
+@component
+Icon: Spinning arc (loading). Sized at `1em` and colored with `currentColor`, so it follows the font of its parent.
+Decorative (`aria-hidden`): give a label to the button that holds it.
 
-<svg class="loading-icon"
+```svelte
+<VideoAction label="..."><LoadingIcon /></VideoAction>
+```
+-->
+
+
+<svg class="loading-icon" aria-hidden="true"
      xmlns="http://www.w3.org/2000/svg"
      viewBox="0 0 24 24"
      fill="currentColor"

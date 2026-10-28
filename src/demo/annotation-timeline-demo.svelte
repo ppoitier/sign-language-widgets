@@ -1,6 +1,4 @@
 <script>
-    import { v4 as uuid_v4 } from 'uuid'
-
     import AnnotationTimeline from '../lib/components/annotations/annotation-timeline.svelte'
     import VideoPlayer from '../lib/components/media/video-player.svelte'
 
@@ -11,7 +9,6 @@
      */
 
     const VIDEO_URL = `${import.meta.env.BASE_URL}continuous-sample/CLSFBI0110A_S002_B.mp4`
-    // @ts-ignore
     const ANNOTATIONS_URL = `${import.meta.env.BASE_URL}continuous-sample/annotations.json`
 
     // Only these tiers are displayed, in this order.
@@ -37,7 +34,7 @@
      */
     function to_annotation(raw) {
         return {
-            id: uuid_v4(),
+            id: crypto.randomUUID(),
             start: raw.start_ms / 1000,
             end: raw.end_ms / 1000,
             label: raw.gloss,
@@ -99,7 +96,8 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        /* Width of the timeline (its default `width`). */
-        width: 800px;
+        /* The timeline fills this width. */
+        max-width: 100rem;
+        padding: 2rem;
     }
 </style>

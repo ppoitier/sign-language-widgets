@@ -64,9 +64,10 @@ With `let download_open = $state(false)` and `let download_sign = $state()`:
             {/each}
         </div>
 
-        <form method="dialog" class="footer">
-            <button class="close-button">Fermer</button>
-        </form>
+        <!-- Not a `<form method="dialog">`: the dialog may be placed inside a form of the app. -->
+        <div class="footer">
+            <button type="button" class="close-button" onclick={() => open = false}>Fermer</button>
+        </div>
     </div>
 </dialog>
 
@@ -93,11 +94,13 @@ With `let download_open = $state(false)` and `let download_sign = $state()`:
     }
 
     h2 {
+        margin: 0;
         font-size: 1.8rem;
         text-align: center;
     }
 
     h3 {
+        margin: 0;
         font-size: 1.3rem;
         font-weight: 600;
     }

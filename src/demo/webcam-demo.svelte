@@ -1,6 +1,7 @@
 <script>
     import MediaCard from '../lib/components/media/media-card.svelte'
     import WebcamPreview from '../lib/components/media/webcam-preview.svelte'
+    import VideoAction from '../lib/components/media/video-action.svelte'
 
     /** @type {MediaStream | null} */
     let stream = $state(null)
@@ -16,7 +17,7 @@
         {#snippet media()}
             <WebcamPreview bind:stream bind:video_element {mirrored}>
                 {#snippet video_actions_right()}
-                    <button onclick={() => mirrored = !mirrored}>Miroir</button>
+                    <VideoAction onclick={() => mirrored = !mirrored}>Miroir</VideoAction>
                 {/snippet}
             </WebcamPreview>
         {/snippet}

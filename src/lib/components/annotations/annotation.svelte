@@ -86,6 +86,9 @@
         display_label = lo > 0 ? full.slice(0, lo) + '…' : ''
     })
 
+    // Times read by screen readers, e.g. "12,3 s".
+    const seconds_format = new Intl.NumberFormat('fr', { maximumFractionDigits: 1 })
+
     /** @param {MouseEvent} event */
     function handle_click(event) {
         // Don't let the click fall through to the track background and trigger a seek.
@@ -105,7 +108,7 @@
     class={['annotation', { hovered }]}
     role="button"
     tabindex="0"
-    aria-label={`Annotation ${annotation.label} de ${annotation.start} à ${annotation.end}`}
+    aria-label={`Annotation ${annotation.label} de ${seconds_format.format(annotation.start)} s à ${seconds_format.format(annotation.end)} s`}
     onmouseenter={() => on_hover?.(annotation)}
     onmouseleave={() => on_hover_end?.()}
     onfocus={() => on_hover?.(annotation)}
@@ -134,6 +137,11 @@
 <style>
     .annotation {
         cursor: pointer;
+    }
+
+    .annotation:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
     }
 
     .annotation-bar {

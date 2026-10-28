@@ -44,6 +44,8 @@ export async function start_recording(stream, { max_duration, video_constraints,
         }
         const mime_type = mime_types.find(type => MediaRecorder.isTypeSupported(type))
         recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: mime_type, videoBitsPerSecond: bit_rate })
+        // Its events are fired later on: the handlers below are set in time.
+        recorder.start()
     } catch (error) {
         release()
         throw error
@@ -56,7 +58,11 @@ export async function start_recording(stream, { max_duration, video_constraints,
     /** @type {Promise<RecordedVideo>} */
     const done = new Promise((resolve, reject) => {
         recorder.ondataavailable = event => chunks.push(event.data)
-        recorder.onerror = event => reject(/** @type {ErrorEvent} */ (event).error ?? event)
+        recorder.onerror = event => {
+            clearTimeout(timeout)
+            release()
+            reject(/** @type {ErrorEvent} */ (event).error ?? event)
+        }
         recorder.onstop = () => {
             release()
             resolve({
@@ -71,7 +77,6 @@ export async function start_recording(stream, { max_duration, video_constraints,
         release()
     }
 
-    recorder.start()
     const timeout = max_duration === undefined ? undefined : setTimeout(stop, max_duration * 1000)
 
     return { done, stop }

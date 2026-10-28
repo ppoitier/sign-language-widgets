@@ -1,3 +1,13 @@
+<!--
+@component
+Icon: "i" in a circle (information). Sized at `1em` and colored with `currentColor`, so it follows the font of its parent.
+Decorative (`aria-hidden`): give a label to the button that holds it.
+
+```svelte
+<VideoAction label="..."><InfoIcon /></VideoAction>
+```
+-->
+
 <script>
     /*
     Pictogrammers Free License
@@ -16,7 +26,7 @@
      */
 </script>
 
-<svg class="info-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<svg class="info-icon" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
 </svg>
 

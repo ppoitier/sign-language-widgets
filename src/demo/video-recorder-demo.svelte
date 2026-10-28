@@ -16,7 +16,7 @@
                            on_recorded={blob => recording = blob}
                            on_error={error => console.error(error)} />
         {/snippet}
-        <p>Étape : {status} (enregistrement à 15 i/s)</p>
+        <p>Étape : {status} (enregistrement à 25 i/s)</p>
         {#if recording}
             <p>Vidéo : {recording.type}, {Math.round(recording.size / 1024)} Ko</p>
         {/if}

@@ -1,3 +1,13 @@
+<!--
+@component
+Icon: Four squares (grid display). Sized at `1em` and colored with `currentColor`, so it follows the font of its parent.
+Decorative (`aria-hidden`): give a label to the button that holds it.
+
+```svelte
+<VideoAction label="..."><GridIcon /></VideoAction>
+```
+-->
+
 <script>
     /*
     Pictogrammers Free License
@@ -16,7 +26,7 @@
      */
 </script>
 
-<svg class="grid-icon"
+<svg class="grid-icon" aria-hidden="true"
      xmlns="http://www.w3.org/2000/svg"
      viewBox="0 0 24 24"
      fill="currentColor"

@@ -133,8 +133,6 @@
             dragging: false,
             live_range: [anchor_time, anchor_time],
         }
-        window.addEventListener('pointermove', handle_track_pointer_move)
-        window.addEventListener('pointerup', handle_track_pointer_up)
     }
 
     /** @param {PointerEvent} event */
@@ -160,17 +158,22 @@
         )
     }
 
-    function handle_track_pointer_up() {
-        window.removeEventListener('pointermove', handle_track_pointer_move)
-        window.removeEventListener('pointerup', handle_track_pointer_up)
-        if (!track_drag) return
+    /** @returns {NonNullable<typeof track_drag> | null} The drag that was active, if any. */
+    function end_track_drag() {
         const drag = track_drag
+        if (!drag) return null
         // Release the active state before mutating selected_range — that mutation
         // re-renders the tier with the new selection, and we don't want to leave
         // a stale overlay on screen.
         track_drag = null
         svg_element = null
         try { drag.capture_target.releasePointerCapture?.(drag.pointer_id) } catch {}
+        return drag
+    }
+
+    function handle_track_pointer_up() {
+        const drag = end_track_drag()
+        if (!drag) return
 
         if (!drag.dragging) {
             // No drag: seek to the click point.
@@ -204,6 +207,14 @@
         seek(clamp(current_time + sign * keyboard_step * (event.shiftKey ? 5 : 1), 0, duration))
     }
 </script>
+
+<!-- Window listeners: the drag goes on outside the tier. They do nothing while no drag is active.
+     A cancelled pointer (e.g. the browser took over a touch) discards the drag. -->
+<svelte:window
+    onpointermove={handle_track_pointer_move}
+    onpointerup={handle_track_pointer_up}
+    onpointercancel={end_track_drag}
+/>
 
 <svg
     {width}
@@ -288,6 +299,12 @@
         fill: #fafafa;
         stroke: #e5e5e5;
         cursor: crosshair;
+        /* Dragging on touch screens selects a range instead of scrolling the page. */
+        touch-action: none;
+    }
+    .track-background:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
     }
     .track-background.drawing {
         cursor: ew-resize;
@@ -310,10 +327,5 @@
         fill: #444;
         font-weight: 500;
         pointer-events: none;
-    }
-
-    :global([tabindex]:focus-visible) {
-        outline: 2px solid #2563eb;
-        outline-offset: 2px;
     }
 </style>

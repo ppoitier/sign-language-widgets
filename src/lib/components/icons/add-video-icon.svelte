@@ -1,3 +1,13 @@
+<!--
+@component
+Icon: Camera with a plus (add a video). Sized at `1em` and colored with `currentColor`, so it follows the font of its parent.
+Decorative (`aria-hidden`): give a label to the button that holds it.
+
+```svelte
+<VideoAction label="..."><AddVideoIcon /></VideoAction>
+```
+-->
+
 <script>
     /*
     Pictogrammers Free License
@@ -16,7 +26,7 @@
      */
 </script>
 
-<svg class="add-video-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<svg class="add-video-icon" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5M14,13H11V16H9V13H6V11H9V8H11V11H14V13Z"/>
 </svg>
 

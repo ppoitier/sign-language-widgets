@@ -140,13 +140,13 @@
         cursor: pointer;
     }
 
+    .track-background:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+    }
+
     .overview-tick {
         pointer-events: none;
         opacity: 0.7;
-    }
-
-    :global([tabindex]:focus-visible) {
-        outline: 2px solid #2563eb;
-        outline-offset: 2px;
     }
 </style>

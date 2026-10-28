@@ -6,7 +6,7 @@ Shortcut for a `MediaCard` holding a `VideoPlayer`.
 ```svelte
 <VideoCard src={video.url} highlighted={is_selected}>
     {#snippet video_actions_right()}
-        <IconButton onclick={download}><DownloadIcon /></IconButton>
+        <VideoAction label="Télécharger" onclick={download}><DownloadIcon /></VideoAction>
     {/snippet}
     <h3>{video.title}</h3>
 </VideoCard>

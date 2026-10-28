@@ -82,22 +82,28 @@ The file is given to `on_imported`; files that are not videos are refused with a
 {/snippet}
 
 {#if video_url}
-    <VideoPlayer src={video_url}>
-        {#snippet video_actions_right()}
-            <!-- First in the right corner, so the cross is the rightmost action. -->
-            <VideoAction label="Retirer la vidéo" onclick={() => file = undefined}>
-                <CloseIcon />
-            </VideoAction>
-            <!-- A label (not a `VideoAction`) to open the file picker; same style as `VideoAction`. -->
-            <label class="button">
-                {@render file_input()}
-                Changer de vidéo
-            </label>
-        {/snippet}
-        {#snippet error()}
-            <h3>Ce format de vidéo n'est pas pris en charge.</h3>
-        {/snippet}
-    </VideoPlayer>
+    <div class="player">
+        <VideoPlayer src={video_url}>
+            {#snippet video_actions_right()}
+                <!-- First in the right corner, so the cross is the rightmost action. -->
+                <VideoAction label="Retirer la vidéo" onclick={() => { file = undefined; error_message = '' }}>
+                    <CloseIcon />
+                </VideoAction>
+                <!-- A label (not a `VideoAction`) to open the file picker; same style as `VideoAction`. -->
+                <label class="button">
+                    {@render file_input()}
+                    Changer de vidéo
+                </label>
+            {/snippet}
+            {#snippet error()}
+                <h3>Ce format de vidéo n'est pas pris en charge.</h3>
+            {/snippet}
+        </VideoPlayer>
+        <!-- A refused file chosen with "Changer de vidéo": the current video stays. -->
+        {#if error_message}
+            <p class="player-error" role="alert">{error_message}</p>
+        {/if}
+    </div>
 {:else}
     <label class={['drop-zone', { dragging: is_dragging_over }]}
            ondragenter={handle_drag_over}
@@ -158,6 +164,27 @@ The file is given to `on_imported`; files that are not videos are refused with a
 
     .error {
         color: #c92a2a;
+    }
+
+    .player {
+        position: relative;
+    }
+
+    /* Above the controls and the overlays (z-index 100), like the corner actions. */
+    .player-error {
+        position: absolute;
+        bottom: 5rem;
+        left: 50%;
+        z-index: 101;
+        translate: -50% 0;
+        max-width: 90%;
+        margin: 0;
+        padding: 0.6rem 1.2rem;
+        border-radius: 0.8rem;
+        background: rgb(0 0 0 / 0.7);
+        color: #ff8787;
+        font-size: 1.4rem;
+        text-align: center;
     }
 
     .button {

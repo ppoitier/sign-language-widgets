@@ -4,19 +4,20 @@ Annotation timeline: an overview strip of the whole duration with a brush select
 and one detail row per tier showing the annotations of that range.
 Clicking a row seeks the playhead, dragging on it selects a new range.
 Times are in seconds (any unit works, as long as `duration` and the annotations use the same).
+The timeline fills the width of its container, unless `width` is given. Nothing is drawn while `duration` is 0
+(e.g. until the video metadata is loaded).
 
 ```svelte
 <script>
     let current_time = $state(0)
     const tiers = [
-        { id: 'speech', name: 'Speech', annotations: [{ id: 1, start: 2, end: 6, label: 'intro' }] },
-        { id: 'gesture', name: 'Gesture', annotations: [{ id: 2, start: 10, end: 14, label: 'action' }] },
+        { id: 'right_hand', name: 'Main droite', annotations: [{ id: 1, start: 2, end: 6, label: 'BONJOUR' }] },
+        { id: 'left_hand', name: 'Main gauche', annotations: [{ id: 2, start: 10, end: 14, label: 'MERCI' }] },
     ]
 </script>
 
 <AnnotationTimeline duration={60} {tiers} bind:current_time
-                    on_annotation_click={(a) => console.log('clicked', a)}
-                    on_seek={({ time }) => console.log('seek', time)} />
+                    on_annotation_click={(annotation) => current_time = annotation.start} />
 ```
 -->
 
@@ -44,7 +45,7 @@ Times are in seconds (any unit works, as long as `duration` and the annotations 
      * @property {Tier[]}   [tiers=[]]                       Annotation tiers to render as stacked detail rows.
      * @property {number}   [current_time=0]                 Bindable playhead position.
      * @property {boolean}  [follow_playback=true]           Keep the brush centered on the playhead.
-     * @property {number}   [width=800]                      Outer width, px.
+     * @property {number}   [width]                          Outer width, px. Defaults to the width of the container.
      * @property {number}   [overview_height=50]             Height of the top overview strip, px.
      * @property {number}   [tier_height=80]                 Height of each tier's detail row, px.
      * @property {number}   [overview_detail_gap=16]         Vertical gap between overview and first tier, px.
@@ -69,7 +70,7 @@ Times are in seconds (any unit works, as long as `duration` and the annotations 
         follow_playback = true,
 
         // Sizing — every visual constant is an overridable prop.
-        width = 800,
+        width,
         overview_height = 50,
         tier_height = 80,
         overview_detail_gap = 16,
@@ -98,7 +99,12 @@ Times are in seconds (any unit works, as long as `duration` and the annotations 
         clamp_range_span([0, duration], duration, 0, max_selection_span, 'start')
     )
 
+    // Width of the container, used when `width` isn't given.
+    let container_width = $state(0)
+
     // --------- Derived ---------
+    const timeline_width = $derived(width ?? container_width)
+
     const merged_annotations = $derived(tiers.flatMap((tier) => tier.annotations))
 
     const color_for_label = $derived(
@@ -107,12 +113,12 @@ Times are in seconds (any unit works, as long as `duration` and the annotations 
 
     // Overview maps full duration onto the padded pixel range.
     const overview_scale = $derived(
-        create_linear_scale([0, duration], [horizontal_padding, width - horizontal_padding])
+        create_linear_scale([0, duration], [horizontal_padding, timeline_width - horizontal_padding])
     )
 
     // Detail maps *only the selected range* onto the same padded pixel range.
     const detail_scale = $derived(
-        create_linear_scale(selected_range, [horizontal_padding, width - horizontal_padding])
+        create_linear_scale(selected_range, [horizontal_padding, timeline_width - horizontal_padding])
     )
 
     const min_selection_span = $derived(Math.min(duration * 0.01, max_selection_span))
@@ -137,46 +143,49 @@ Times are in seconds (any unit works, as long as `duration` and the annotations 
     })
 </script>
 
-<div class="timeline" style:width="{width}px">
-    <TimelineOverview
-        {width}
-        height={overview_height}
-        {duration}
-        bind:current_time
-        bind:selected_range
-        scale={overview_scale}
-        annotations={merged_annotations}
-        {color_for_label}
-        handle_width={brush_handle_width}
-        min_span={min_selection_span}
-        max_span={max_selection_span}
-        {keyboard_step}
-        {on_seek}
-        on_selection_change_commit={on_selection_change}
-    />
+<div class="timeline" style:width={width === undefined ? undefined : `${width}px`} bind:clientWidth={container_width}>
+    <!-- The scales can't be built without a duration (division by 0), nor drawn before the width is known. -->
+    {#if duration > 0 && timeline_width > 0}
+        <TimelineOverview
+            width={timeline_width}
+            height={overview_height}
+            {duration}
+            bind:current_time
+            bind:selected_range
+            scale={overview_scale}
+            annotations={merged_annotations}
+            {color_for_label}
+            handle_width={brush_handle_width}
+            min_span={min_selection_span}
+            max_span={max_selection_span}
+            {keyboard_step}
+            {on_seek}
+            on_selection_change_commit={on_selection_change}
+        />
 
-    <div class="tiers" style:gap="{tier_gap}px" style:margin-top="{overview_detail_gap}px">
-        {#each tiers as tier (tier.id)}
-            <AnnotationTier
-                {width}
-                height={tier_height}
-                {duration}
-                {tier}
-                bind:selected_range
-                bind:current_time
-                scale={detail_scale}
-                {color_for_label}
-                {keyboard_step}
-                min_span={min_selection_span}
-                max_span={max_selection_span}
-                {label_min_pixels_per_unit}
-                show_tier_name={show_tier_names}
-                {on_annotation_click}
-                {on_seek}
-                on_selection_change_commit={on_selection_change}
-            />
-        {/each}
-    </div>
+        <div class="tiers" style:gap="{tier_gap}px" style:margin-top="{overview_detail_gap}px">
+            {#each tiers as tier (tier.id)}
+                <AnnotationTier
+                    width={timeline_width}
+                    height={tier_height}
+                    {duration}
+                    {tier}
+                    bind:selected_range
+                    bind:current_time
+                    scale={detail_scale}
+                    {color_for_label}
+                    {keyboard_step}
+                    min_span={min_selection_span}
+                    max_span={max_selection_span}
+                    {label_min_pixels_per_unit}
+                    show_tier_name={show_tier_names}
+                    {on_annotation_click}
+                    {on_seek}
+                    on_selection_change_commit={on_selection_change}
+                />
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style>

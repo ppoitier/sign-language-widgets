@@ -5,7 +5,7 @@ Dropdown with a searchable list of checkboxes. The top row toggles every option 
 Styled with the CSS variables `--field-background`, `--field-border` and `--field-active-background`.
 
 ```svelte
-<MultiSelectField bind:options default_text="All tags" />
+<MultiSelectField bind:options default_text="Tous les mots" />
 ```
 -->
 
@@ -13,20 +13,15 @@ Styled with the CSS variables `--field-background`, `--field-border` and `--fiel
     import CheckboxListIcon from '../icons/checkbox-list-icon.svelte'
 
     /**
-     * @typedef {Object} MultiSelectOption
-     * @property {string} id - Unique id, also used as the checkbox `id` and `name`.
-     * @property {string} name - Label displayed next to the checkbox.
-     * @property {boolean} selected - Whether the option is checked.
-     *
-     * @typedef {Object} MultiSelectFieldProps
-     * @property {MultiSelectOption[]} options - Bindable list of options. Use `bind:options` to read the selection.
-     * @property {string} [default_text='All'] - Label of the "select all" row.
+     * @typedef {Object} Props
+     * @property {import('./multi-select-option.js').MultiSelectOption[]} options - Bindable list of options. Use `bind:options` to read the selection.
+     * @property {string} [default_text='Tout'] - Label of the "select all" row.
      * @property {string} [id='multi-select'] - Prefix for the ids of the "all" and search inputs. Must be unique per page.
-     * @property {string} [search_placeholder='Search entry...'] - Placeholder of the search input.
+     * @property {string} [search_placeholder='Rechercher...'] - Placeholder of the search input.
      */
 
-    /** @type {MultiSelectFieldProps} */
-    let {options = $bindable(), default_text = 'All', id = 'multi-select', search_placeholder = 'Search entry...'} = $props()
+    /** @type {Props} */
+    let {options = $bindable(), default_text = 'Tout', id = 'multi-select', search_placeholder = 'Rechercher...'} = $props()
 
     let opened = $state(false)
     let search = $state('')
@@ -42,23 +37,24 @@ Styled with the CSS variables `--field-background`, `--field-border` and `--fiel
     }
 </script>
 
-<div class="multi-select" class:opened>
+<div class={['multi-select', { opened }]}>
     <div class="multi-select_field">
         <div class="multi-select_option">
             <input type="checkbox" name="{id}_all" id="{id}_all" checked={all_selected} onclick={all_button_clicked}>
             <label for="{id}_all">{default_text}</label>
         </div>
-        <!-- TODO: prevent this button from submitting the parent form. -->
-        <button class="multi-select_icon" type="button" onclick={() => (opened = !opened)}>
+        <button class="multi-select_icon" type="button" aria-label="Choisir les options" title="Choisir les options"
+                aria-expanded={opened} onclick={() => (opened = !opened)}>
             <CheckboxListIcon/>
         </button>
     </div>
-    <div class="multi-select_options">
+    <!-- Hidden by a transform when closed: `inert` keeps its fields out of the keyboard navigation. -->
+    <div class="multi-select_options" inert={!opened}>
         <div class="multi-select_option">
             <input type="text" name="{id}_search" id="{id}_search" class="multi-select_search"
-                   placeholder={search_placeholder} bind:value={search}/>
+                   aria-label={search_placeholder} placeholder={search_placeholder} bind:value={search}/>
         </div>
-        {#each filtered_options as option}
+        {#each filtered_options as option (option.id)}
             <div class="multi-select_option">
                 <input type="checkbox" name={option.id} id={option.id} bind:checked={option.selected}/>
                 <label for={option.id}>{option.name}</label>
