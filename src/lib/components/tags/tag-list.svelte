@@ -1,9 +1,14 @@
 <!--
 @component
-List of tags. When `editable`, tags can be renamed or deleted, and a button adds new ones.
+List of tags. When `editable`, tags can be edited or deleted (see `EditableTag`), and a button adds new ones.
+Two tags can't have the same text (ignoring case): such an edit can't be saved.
+The parent owns the tags and updates them in the callbacks.
 
 ```svelte
-<TagList texts={words} editable {on_new} {on_updated} {on_deleted} />
+<TagList tags={words} editable
+         on_added={(text) => add_word(text)}
+         on_updated={(id, text) => rename_word(id, text)}
+         on_deleted={(id) => remove_word(id)} />
 ```
 -->
 
@@ -11,89 +16,56 @@ List of tags. When `editable`, tags can be renamed or deleted, and a button adds
     import Tag from './tag.svelte'
     import EditableTag from './editable-tag.svelte'
     import AddIcon from '../icons/add-icon.svelte'
-    import {tick} from 'svelte'
 
     /**
-     * Callback function triggered when a tag is updated.
-     * @callback UpdatedHandler
-     * @param {number} index The index of the tag being saved.
-     * @param {string} newText The new text content of the tag.
-     * @returns {void}
+     * @typedef {Object} Props
+     * @property {import('./tag-item.js').TagItem[]} tags - Tags of the list.
+     * @property {boolean} [editable=false] - If true, tags can be edited, deleted and added.
+     * @property {(text: string) => void} [on_added] - Called with the text of a new tag.
+     * @property {(id: string, text: string) => void} [on_updated] - Called with the id and the new text of an edited tag.
+     * @property {(id: string) => void} [on_deleted] - Called with the id of a deleted tag.
      */
+
+    /** @type {Props} */
+    let { tags, editable = false, on_added, on_updated, on_deleted } = $props()
+
+    let adding = $state(false)
 
     /**
-     * Callback function triggered when a tag is deleted.
-     * @callback DeletedHandler
-     * @param {number} index The index of the tag being saved.
-     * @returns {void}
+     * Validator of a tag's text (see `EditableTag`): two tags can't have the same text, ignoring case.
+     * @param {string | undefined} id - Id of the edited tag, `undefined` for a new one.
+     * @returns {(text: string) => string | undefined}
      */
-
-    /**
-     * Callback function triggered when a tag is added.
-     * @callback AddHandler
-     * @param {string} newText The text content of the new tag.
-     * @returns {void}
-     */
-
-    /**
-     * @typedef {Object} TagListProps
-     * @property {string[]} texts - Text of each tag.
-     * @property {UpdatedHandler} on_updated - Called when a tag is edited and saved.
-     * @property {AddHandler} on_new - Called when a tag is added.
-     * @property {DeletedHandler} on_deleted - Called when a tag is deleted.
-     * @property {boolean} [editable=false] - If true, allows tags to be edited, deleted and added.
-     */
-
-    /** @type {TagListProps} */
-    let {texts, on_updated, on_new, on_deleted, editable = false} = $props()
-    /** @type {boolean} */
-    let editing_new_tag = $state(false)
-    /** @type {string} */
-    let new_tag_text = $state('')
-    /** @type {any} */
-    let new_tag = $state(null)
-
-    /**
-     * Called when the new tag button is pressed.
-     * It opens the new tag input field.
-     */
-    function on_button_pressed() {
-        editing_new_tag = true
-        tick().then(() => {
-            if (!new_tag) {
-                throw new Error('Cannot find new tag element.')
-            }
-            new_tag.focus()
-        })
-    }
-
-    /**
-     * Called when the value of the new tag is saved.
-     * @param {string} saved_text The new text of the new tag.
-     */
-    function on_new_tag_saved(saved_text) {
-        editing_new_tag = false
-        new_tag_text = ''
-        on_new(saved_text)
+    function unique_text(id) {
+        return (text) => {
+            const lower_text = text.toLocaleLowerCase()
+            const is_duplicate = tags.some((tag) => tag.id !== id && tag.text.toLocaleLowerCase() === lower_text)
+            return is_duplicate ? 'Déjà présent dans la liste.' : undefined
+        }
     }
 </script>
 
 <div class="tag-list">
-    {#each texts as text, index}
+    {#each tags as tag (tag.id)}
         {#if editable}
-            <EditableTag {text} on_save={(new_text) => on_updated(index, new_text)} on_delete={() => on_deleted(index)}/>
+            <EditableTag text={tag.text}
+                         validate={unique_text(tag.id)}
+                         on_save={(text) => on_updated?.(tag.id, text)}
+                         on_delete={() => on_deleted?.(tag.id)} />
         {:else}
-            <Tag {text}/>
+            <Tag text={tag.text} />
         {/if}
     {/each}
-    {#if editing_new_tag}
-        <EditableTag bind:this={new_tag} text={new_tag_text} on_save={on_new_tag_saved}
-                     on_cancel={() => (editing_new_tag = false)}/>
-    {/if}
+
     {#if editable}
-        <button class="add-tag-button" aria-label="Add tag" onclick={on_button_pressed}>
-            <AddIcon/>
-        </button>
+        {#if adding}
+            <!-- Removed once its edit is over (`adding` becomes false). -->
+            <EditableTag text="" bind:editing={adding} validate={unique_text(undefined)} on_save={(text) => on_added?.(text)} />
+        {:else}
+            <button type="button" class="add-button" aria-label="Ajouter" title="Ajouter" onclick={() => adding = true}>
+                <AddIcon />
+            </button>
+        {/if}
     {/if}
 </div>
 
@@ -101,23 +73,26 @@ List of tags. When `editable`, tags can be renamed or deleted, and a button adds
     .tag-list {
         display: flex;
         flex-wrap: wrap;
-        gap: .4em;
-        padding: .2em .5em;
+        align-items: center;
+        gap: 0.4em;
     }
 
-    .add-tag-button {
-        all: unset;
+    .add-button {
         display: grid;
         place-items: center;
-        font-size: 1.6em;
+        padding: 0;
+        border: none;
+        background: none;
         color: var(--tag-color);
+        font-size: 1.6em;
+        cursor: pointer;
     }
 
-    .add-tag-button:hover, .add-tag-button:active {
+    .add-button:hover {
         color: var(--active-tag-color);
     }
 
-    .add-tag-button:focus-visible {
-        outline: .1em solid red;
+    .add-button:focus-visible {
+        outline: 0.1rem solid var(--focus-visible-color);
     }
 </style>

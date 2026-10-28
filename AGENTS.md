@@ -11,6 +11,7 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 - `src/lib/` — the published library (only `dist`, built from it, is shipped). Entry point: `src/lib/index.js`; also `global.css`.
 - `src/lib/components/` — library components (e.g. `annotations/AnnotationTimeline.svelte`, `timeline-utils.js` holds shared typedefs)
+- `src/lib/services/` — non-UI logic used by the components (see Architecture)
 - `src/demo/`, `src/app.svelte`, `src/app.js` — demo app, NOT part of the package. Demos import from `../lib/...`.
 - `public/` — demo-only static assets (sample video, annotations JSON)
 - New public components must be exported from `src/lib/index.js`.
@@ -25,6 +26,14 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 - Indentation: 4 spaces in `.svelte` files, no semicolons.
 - UI strings are in French.
 
+## Architecture: simple components
+
+- **Components stay simple: UI only.** What to show (layout, steps/screens of a flow, overlays), user interactions, and presentation (French messages, styles). No business logic in components.
+- **Services** (`src/lib/services/*.service.js`, plain JS + JSDoc): logic that manages a resource over time or enforces a rule (e.g. recording, its constraints and limits). A service is usable without any component, and exported from `index.js` when apps can use it directly. Components call services and tie them to their lifecycle (start in `$effect`, stop in its cleanup).
+- **Helpers**: small pure functions (formatting, fullscreen...), kept next to the components that use them (e.g. `media/format-time.js`); move them to a shared folder only once used elsewhere.
+- **Errors**: no global error store. Each component shows its own errors (French message in its overlay) and reports them through an `on_error(error)` callback; apps decide what to do (toast, logging...). `<svelte:boundary>` is the app-level safety net for unexpected errors.
+- When writing or reworking a component, move non-UI logic to a service. But don't extract further speculatively: e.g. a headless `.svelte.js` controller holding a component's flow is only worth it once a second UI needs the same flow.
+
 ## Documentation
 
 - Every exported component starts with an `<!-- @component -->` header: a short description plus a usage example in a `svelte` code block.
@@ -37,10 +46,12 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 
 ## Known issues to fix when reworking components
 
-- `editable-tag`: `$state(text)` only captures the initial value of `text`.
-- `tag-list`, `multi-select-field`: `{#each}` blocks have no keys.
-- `sign-group`: reassigns the `mode` prop; it should be `$bindable`.
+- `multi-select-field`: `{#each}` blocks have no keys.
 - `multi-select-field`: the toggle button can submit a parent form (TODO in code); `class:opened` could use a `class` array.
+
+## Demos
+
+- `src/app.svelte` shows one demo at a time, chosen by the URL hash (`#card-grid`, `#video-recorder`...), with a navigation bar; the default is `card-grid`. Add a new demo to its `demos` object (one import + one entry).
 
 ## Static assets in demos
 
@@ -48,9 +59,47 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 - Cancel in-flight requests with an `AbortController` inside `$effect` cleanup.
 - `$effect` is fine for fetching (a side effect); don't use it to derive state, use `$derived`.
 
+## Media components (`src/lib/components/media/`)
+
+- Components:
+  - `video-player.svelte` (`VideoPlayer`): Video.js 10 player with our own skin; props `current_time` (bindable), `markers`, `start_time`/`end_time`, `error` snippet, corner actions.
+  - `webcam-preview.svelte` (`WebcamPreview`): live camera, no Video.js; exposes `bind:stream` (recording) and `bind:video_element` (MediaPipe); children are a layer mirrored with the video (canvas for landmarks).
+  - `media-card.svelte` (`MediaCard`): generic card with a `media` snippet; `video-card.svelte` (`VideoCard`) is a shortcut for `MediaCard` + `VideoPlayer`.
+  - `video-recorder.svelte` (`VideoRecorder`): `WebcamPreview` + `start_recording` (see Services), then `VideoPlayer` for playback. A bindable `status` (`idle` → `countdown` → `recording` → `recorded`) drives everything through `$effect`s (the recording effect runs its body in `untrack`, so only `status` restarts it); `on_recorded` gets the `Blob`. `constraints` go to `getUserMedia` (preview + recording), `recording_constraints` to the recorded video only. On failure: French message on the idle overlay, back to `idle`, `on_error` (also forwarded from `WebcamPreview`). Recorded WebM has no duration (Infinity in Chrome), so the measured duration is passed as `end_time`. Countdown/buttons go in `WebcamPreview`'s `overlay` snippet (not mirrored, visible in fullscreen). The webcam and the player are swapped inside a wrapper `div` passed to both as `fullscreen_element`, so fullscreen survives the swap (it can't be re-requested on the new element: `requestFullscreen` needs a user click, and the recording can stop by itself).
+  - `fullscreen.js`: `get_fullscreen_element()` (reactive, via `createSubscriber`) and `toggle_fullscreen(element)`. `WebcamPreview` and `VideoPlayer` take an optional `fullscreen_element`; `VideoPlayer` then swaps Video.js' fullscreen button (which only targets its own `media-container`) and the `f` hotkey for our button. Without it, keep Video.js' button: it also handles the iPhone (video-only fullscreen).
+  - `video-importer.svelte` (`VideoImporter`): 16:9 drop zone (a `<label>` around a visually hidden but focusable file input, no JS click), then `VideoPlayer` for playback; its "Changer de vidéo" corner action is another `<label>` around the same input (shared `file_input` snippet), so it opens the picker directly; a cross (`icons/close-icon.svelte`) next to it removes the video. Bindable `file` (`undefined` shows the drop zone); `on_imported` gets the `File`; non-video files are refused (dropping ignores `accept`).
+  - `video-action.svelte` (`VideoAction`): button shown over a video (corner actions, overlays), white on translucent black; with `label`, it's an icon button (`aria-label` + tooltip). Used by `VideoRecorder` and `VideoImporter`, whose "Changer de vidéo" `<label>` keeps a copy of the style (`.button`): it can't be a button.
+  - Helpers: `format-time.js` (`m:ss`), `video-marker.js` (`Marker` typedef), `fullscreen.js`.
+- All media times are in **seconds**.
+- Video.js 10 (`@videojs/html`; don't add the `video.js` npm package: it's only a v8 → v10 pointer, no player):
+  - Don't use the packaged `<video-skin>`: its shadow DOM can't be restyled (e.g. the controls gradient) and its timeline can't hold markers.
+  - Our skin uses unstyled `media-*` elements, French labels via `<media-i18n lang="fr">`. In component CSS, wrap runtime `data-*` selectors in `:global(...)`.
+  - Playback rates aren't configurable in Video.js yet, hence the custom speed button. The timeline (native range input) and the time display are ours too, so they can cover only the `start_time`/`end_time` range.
+  - Playback state goes through Svelte media bindings on the `<video>` (`bind:currentTime`, `bind:duration`, `bind:paused`, `bind:playbackRate`), not the Video.js store.
+  - Errors: use the `<video>` `error` event, not `<media-error-dialog>` (it misses errors raised before it attaches). The loading overlay waits for `loadedmetadata`, not `loadeddata` (iOS may not load frames before play).
+- `$effect` is legitimately used to drive media (range clamping in `VideoPlayer`, opening/releasing the camera in `WebcamPreview`): the autofixer's "state assigned in `$effect`" suggestions there are expected.
+- Corner actions use `z-index: 101`, above `VideoOverlay` (`z-index: 100`), so they stay usable on loading/error.
+- `getUserMedia` needs a secure context (HTTPS or `localhost`).
+- Demos: `demo/video-card-demo.svelte`, `demo/webcam-demo.svelte`, `demo/video-recorder-demo.svelte` and `demo/video-importer-demo.svelte` (see Demos).
+
+## Tags and signs (`src/lib/components/tags/`, `signs/`)
+
+- `tag.svelte` (`Tag`), `editable-tag.svelte` (`EditableTag`: bindable `editing`, `on_save` / `on_delete` (empty text) / `on_cancel`, optional `validate(text)` returning a French error: the field is `:invalid` via `setCustomValidity`, Enter shows the browser bubble, blur cancels), `tag-list.svelte` (`TagList`: `tags` are `TagItem`s `{ id, text }` from `tag-item.js`, keyed by `id`; callbacks `on_added(text)`, `on_updated(id, text)`, `on_deleted(id)`; texts are unique, ignoring case). The parent owns the data and updates it in the callbacks.
+- `signs/sign-card.svelte` (`SignCard`): `VideoCard` + `TagList` of `words`, flat props (no `Sign` entity), corner action snippets and an `actions` snippet next to the words. Callbacks don't get the sign id: the parent closes over it.
+- `signs/sign-list.svelte` (`SignList`, a `<ul>` with children) + `signs/sign-list-item.svelte` (`SignListItem`, an `<li>`): list counterpart of `CardGrid` + `SignCard`, same props as `SignCard`. Each row is a size container: below 56rem wide, the words go under the video (container query, not a media query).
+- `signs/sign-group.svelte` (`SignGroup`): `signs` (`SignItem`s `{ id, src, poster?, words, editable?, highlighted? }` from `sign-item.js`) as a `CardGrid` of `SignCard`s or a `SignList`, switched by buttons (bindable `mode`: `'grid'` / `'list'`). The action snippets (`video_actions_left/right`, `actions`) take the sign as parameter, so apps write their buttons in their own scope (no callbacks threaded through the group); the word callbacks get the sign first. Both item components share their props, so the group renders one `{#each}` with `Item = mode === 'grid' ? SignCard : SignListItem`.
+- `media/video-download-dialog.svelte` (`VideoDownloadDialog`): modal `<dialog>` to choose a format (gif, webp, mp4, webm), bindable `open`, `on_download(format)`. Not part of `SignGroup`: the app opens it from its download button and remembers the sign.
+- Demos `sign-card-demo`, `sign-list-demo` and `sign-group-demo` share their data and word helpers from `demo/sample-signs.js`.
+- Layout: `layout/card-grid.svelte` (`CardGrid`): responsive grid, 1 column on phones up to `max_columns`; cards keep their own height (`align-items: start`).
+
+## Services (`src/lib/services/`)
+
+- `recording.service.js` (exported): `start_recording(stream, { max_duration, video_constraints, bit_rate, mime_types })` → `{ done, stop }`. `done` resolves with `{ blob, duration }` when the recording stops (`stop()`, `max_duration` reached, or the stream ends), rejects on failure; `stop()` also releases the tracks (to discard, call it and ignore `done`). It records **clones** of the tracks, so `video_constraints` (`applyConstraints`) never affect the original stream / preview. Formats: MP4 first (Safari only records MP4), then WebM (Firefox).
+
 ## Packaging notes
 
 - Keep `typescript` below 7: `svelte-package` (via `svelte2tsx`) refuses TypeScript 7.
-- Video player: Video.js 10 through `@videojs/html`, with our own skin in `media/video-player.svelte` (unstyled `media-*` UI elements, French labels via `<media-i18n lang="fr">`). Don't use the packaged `<video-skin>`: its shadow DOM can't be restyled (e.g. the controls gradient). In component CSS, wrap runtime `data-*` selectors in `:global(...)`. Playback rates aren't configurable in Video.js yet, hence the custom speed button. The timeline (native range input) and the time display are ours too, so they can cover only the `start_time`/`end_time` range; playback state goes through Svelte media bindings (`bind:currentTime`, `bind:duration`, `bind:paused`...) on the `<video>`. `video.svelte` still uses the Video.js 8 API and is broken until it is remade. `webcam.svelte` is a plain `<video>` (live `MediaStream`, no Video.js needed); its `video-js vjs-fill` classes are leftovers.
-- `package.json` publishes `dist` only; `exports` point at `dist` (`svelte` + `types` conditions). Consumers: `import { Video } from 'sign-language-widgets'` and `import 'sign-language-widgets/global.css'`.
+- `peerDependencies.svelte` follows a recent Svelte (`^5.57.0`): the apps using the library stay on the latest Svelte, so recent features (e.g. attachments `{@attach}`) are allowed. Raise it when a component needs a newer feature, and keep it in sync with the `svelte` devDependency.
+- Shared typedefs live in `.js` files (e.g. `media/video-marker.js`), not in `.svelte` files, so the generated `.d.ts` can import them.
+- `package.json` publishes `dist` only; `exports` point at `dist` (`svelte` + `types` conditions). Consumers: `import { VideoPlayer } from 'sign-language-widgets'` and `import 'sign-language-widgets/global.css'`.
 - Sample data in `public/continuous-sample/`: `annotations.json` has tiers `right_hand`, `left_hand`, `both_hands`, `signer`; each annotation has `start_ms`, `end_ms`, `gloss` (+ frame info, lemma, sign_type...). Times are in milliseconds; the timeline expects seconds.

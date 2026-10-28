@@ -21,10 +21,6 @@
     --field-active-background: #d8d8d8;
 
     --active-action-color: rgba(1, 178, 175, 1.0);
-
-    --container-max-width: 100rem;
-    --grid-gap: 1rem;
-    --grid-max-nb-columns: 4;
 }
 
 * {
@@ -40,10 +36,4 @@ body {
     font-style: normal;
     font-variation-settings: "wdth" 100;
     font-size: 1.6rem;
-}
-
-@media (width >= 1400px) {
-    :root {
-        --container-max-width: 120rem;
-    }
 }

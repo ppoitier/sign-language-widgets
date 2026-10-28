@@ -1,15 +1,20 @@
 <!--
 @component
-Read-only colored label. Colored with the CSS variable `--tag-color`.
+Read-only label, colored with the CSS variable `--tag-color`.
 
 ```svelte
-<Tag text="hello" />
+<Tag text="bonjour" />
 ```
 -->
 
 <script>
-    /** @type {{text?: string}} */
-    let {text = 'example of name'} = $props()
+    /**
+     * @typedef {Object} Props
+     * @property {string} text - Text of the tag.
+     */
+
+    /** @type {Props} */
+    let { text } = $props()
 </script>
 
 <span class="tag">{text}</span>
@@ -17,7 +22,7 @@ Read-only colored label. Colored with the CSS variable `--tag-color`.
 <style>
     .tag {
         display: inline-block;
-        padding: .2em .6em;
+        padding: 0.2em 0.6em;
         border-radius: 0.4em;
         background-color: var(--tag-color);
         color: white;

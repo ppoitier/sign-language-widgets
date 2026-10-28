@@ -1,73 +1,78 @@
+/**
+ * @typedef {Object} RecordingOptions
+ * @property {number} [max_duration] - Maximum length of the recording, in seconds: it then stops by itself. No limit by default.
+ * @property {MediaTrackConstraints} [video_constraints] - Applied to the recorded video only (e.g. `{ frameRate: 15 }`): the given stream, and its preview, are not affected. The browser can only lower what the camera delivers.
+ * @property {number} [bit_rate=1_500_000] - Targeted video bitrate, in bits per second.
+ * @property {string[]} [mime_types] - Formats by preference, the first one supported by the browser is used. Defaults to MP4, then WebM.
+ *
+ * @typedef {Object} RecordedVideo
+ * @property {Blob} blob - The video.
+ * @property {number} duration - Measured length of the recording, in seconds. Recorded WebM files have no duration (Chrome reports `Infinity`).
+ *
+ * @typedef {Object} Recording
+ * @property {Promise<RecordedVideo>} done - Resolves with the video once the recording stops (`stop()`, `max_duration` reached, or the stream ended). Rejects if the recording fails.
+ * @property {() => void} stop - Stops the recording and releases its tracks. To discard the video, call it and ignore `done`.
+ */
+
+// Safari only records MP4, Firefox only WebM.
+const DEFAULT_MIME_TYPES = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm']
 
 /**
- * Recorder that is able to start and stop a video stream recording.
- * When the recorder stops recording, the recorded video is stored as a `Blob` into the `recording` store.
+ * Starts recording a stream (e.g. the webcam stream of `WebcamPreview`).
+ * Rejects if the constraints can't be applied or if the browser can't record.
  *
- * @typedef {Object} RecorderProps
- * @property {MediaStream} stream - Input video stream that is recorded.
- * @property {number} [max_duration=5] - Maximum duration (in seconds) of the recording before automatically
- * stopping the recording.
- * @property {number} [bit_rate=1_500_000] - Targeted bitrate for the resulting recording.
+ * ```js
+ * const recording = await start_recording(stream, { max_duration: 5, video_constraints: { frameRate: 15 } })
+ * const { blob } = await recording.done // After 5 s, or sooner with `recording.stop()`.
+ * ```
+ *
+ * @param {MediaStream} stream
+ * @param {RecordingOptions} [options]
+ * @returns {Promise<Recording>}
  */
-export class Recorder extends EventTarget {
-    /** @type BlobPart[] */
-    recorded_chunks = []
-    /** @type {number | null} */
-    timeout_registration = null
+export async function start_recording(stream, { max_duration, video_constraints, bit_rate = 1_500_000, mime_types = DEFAULT_MIME_TYPES } = {}) {
+    // Clones are independent tracks: constraining them doesn't change the original stream.
+    const tracks = stream.getTracks().map(track => track.clone())
+    const release = () => tracks.forEach(track => track.stop())
 
-    /**
-     * @param {RecorderProps} options
-     */
-    constructor({stream, max_duration = 5, bit_rate = 1_500_000}) {
-        super()
-        this.max_duration = max_duration
-        const mime_types = [
-            'video/webm;codecs=vp9,opus',
-            'video/webm;codecs=vp8,opus',
-            'video/webm', // Fallback
-        ]
-        this.supported_mime_type = mime_types.find(type => MediaRecorder.isTypeSupported(type))
-        if (!this.supported_mime_type) {
-            // TODO: better error message
-            throw new Error('Unsupported browser.')
+    /** @type {MediaRecorder} */
+    let recorder
+    try {
+        if (video_constraints) {
+            const video_tracks = tracks.filter(track => track.kind === 'video')
+            await Promise.all(video_tracks.map(track => track.applyConstraints(video_constraints)))
         }
-        console.log(`Found compatible recording video CODEC: ${this.supported_mime_type}`)
-        this.recorder = new MediaRecorder(stream, {bitsPerSecond: bit_rate, mimeType: this.supported_mime_type})
-        this.recorder.addEventListener('dataavailable', (event) => {
-            if (event.data.size > 0) {
-                this.recorded_chunks.push(event.data)
-            }
-        })
-        this.recorder.addEventListener('stop', () => {
-            const recording = new Blob(this.recorded_chunks, {
-                type: 'video/webm'
+        const mime_type = mime_types.find(type => MediaRecorder.isTypeSupported(type))
+        recorder = new MediaRecorder(new MediaStream(tracks), { mimeType: mime_type, videoBitsPerSecond: bit_rate })
+    } catch (error) {
+        release()
+        throw error
+    }
+
+    /** @type {Blob[]} */
+    const chunks = []
+    const start_time = performance.now()
+
+    /** @type {Promise<RecordedVideo>} */
+    const done = new Promise((resolve, reject) => {
+        recorder.ondataavailable = event => chunks.push(event.data)
+        recorder.onerror = event => reject(/** @type {ErrorEvent} */ (event).error ?? event)
+        recorder.onstop = () => {
+            release()
+            resolve({
+                blob: new Blob(chunks, { type: recorder.mimeType }),
+                duration: (performance.now() - start_time) / 1000,
             })
-            this.recorded_chunks = []
-            const event = new CustomEvent('recorded', {detail: {blob: recording}})
-            this.dispatchEvent(event)
-        })
-    }
-
-    /**
-     * Start recording the input video stream.
-     */
-    start() {
-        console.log(`Starting recording (codec=${this.supported_mime_type})`)
-        this.recorder.start()
-        this.timeout_registration = setTimeout(() => {
-            this.recorder.stop()
-        }, this.max_duration * 1000)
-    }
-
-    /**
-     * Stop recording the input video stream and send the Blob to the `recording` store.
-     * This function is automatically called at the end of the timeout.
-     * The timeout is canceled if you call it manually.
-     */
-    stop() {
-        if (this.timeout_registration) {
-            clearTimeout(this.timeout_registration)
         }
-        this.recorder.stop()
+    })
+    function stop() {
+        clearTimeout(timeout)
+        if (recorder.state !== 'inactive') recorder.stop()
+        release()
     }
+
+    recorder.start()
+    const timeout = max_duration === undefined ? undefined : setTimeout(stop, max_duration * 1000)
+
+    return { done, stop }
 }

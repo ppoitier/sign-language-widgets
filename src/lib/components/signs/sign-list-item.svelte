@@ -1,131 +1,133 @@
 <!--
 @component
-Table row (`<tr>`) showing a sign video and its associated words. It must be rendered inside a `<tbody>`.
-Words can be added, edited and deleted. Edits are reported with the sign id and the id of the changed word.
+Row of a `SignList`: the video of a sign (see `VideoPlayer`) next to its words (see `TagList`), and optional
+actions on the right. On narrow rows (phones), the words go below the video.
+Same props as `SignCard`: when `editable`, words can be added, edited and deleted, and the parent updates
+`words` in the callbacks.
 
 ```svelte
-<SignListItem {sign} {on_new_word} {on_updated_word} {on_deleted_word} />
+<SignList>
+    {#each signs as sign (sign.id)}
+        <SignListItem src={sign.url} words={sign.words} editable
+                      on_word_added={(text) => add_word(sign.id, text)}
+                      on_word_updated={(word_id, text) => rename_word(sign.id, word_id, text)}
+                      on_word_deleted={(word_id) => remove_word(sign.id, word_id)}>
+            {#snippet video_actions_right()}
+                <VideoAction label="Télécharger" onclick={() => download(sign)}><DownloadIcon /></VideoAction>
+            {/snippet}
+        </SignListItem>
+    {/each}
+</SignList>
 ```
 -->
 
 <script>
-    import VideoActions from '../interaction/video-actions.svelte'
-    import Video from '../media/video.svelte'
+    import VideoPlayer from '../media/video-player.svelte'
     import TagList from '../tags/tag-list.svelte'
 
     /**
-     * @typedef {import('../../entities/sign.js').Sign} Sign
      * @typedef {import('svelte').Snippet} Snippet
      *
-     * @typedef {Object} SignListItemProps
-     * @property {Sign} sign - Sign displayed in the row.
-     * @property {NewWordCallback} on_new_word - Function called when a new word is added to the sign.
-     * @property {UpdatedWordCallback} on_updated_word - Function called when a word of the sign is updated.
-     * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
-     * @property {Snippet | undefined} [video_actions_right] - Additional actions displayed in the top-right corner of the sign video.
-     * @property {Snippet | undefined} [video_actions_left] - Additional actions displayed in the top-left corner of the sign video.
-     * @property {Snippet | undefined} [main_actions] - Additional actions displayed in the table.
+     * @typedef {Object} Props
+     * @property {string} src - URL of the video of the sign.
+     * @property {string | undefined} [poster] - URL of an image displayed before the video plays.
+     * @property {import('../tags/tag-item.js').TagItem[]} [words=[]] - Words associated with the sign.
+     * @property {boolean} [editable=false] - If true, words can be added, edited and deleted.
+     * @property {boolean} [highlighted=false] - If true, the row is highlighted.
+     * @property {(text: string) => void} [on_word_added] - Called with the text of a new word.
+     * @property {(word_id: string, text: string) => void} [on_word_updated] - Called with the id and the new text of an edited word.
+     * @property {(word_id: string) => void} [on_word_deleted] - Called with the id of a deleted word.
+     * @property {Snippet | undefined} [video_actions_left] - Actions added to the top-left corner of the video.
+     * @property {Snippet | undefined} [video_actions_right] - Actions added to the top-right corner of the video.
+     * @property {Snippet | undefined} [actions] - Actions shown on the right of the row (e.g. approve / reject).
      */
 
-    /**
-     * @callback NewWordCallback
-     * @param {string} sign_id
-     * @param {string} new_word
-     */
-
-    /**
-     * @callback UpdatedWordCallback
-     * @param {string} sign_id
-     * @param {string} word_id
-     * @param {string} new_word
-     */
-
-    /**
-     * @callback DeletedWordCallback
-     * @param {string} sign_id
-     * @param {string} word_id
-     */
-
-    /** @type {SignListItemProps} */
-    let {sign, on_new_word, on_updated_word, on_deleted_word, video_actions_right, video_actions_left, main_actions} = $props()
-    let word_names = $derived(sign.words.map(w => w.word))
-
-    /**
-     * @param {string} new_word
-     */
-    function handle_new_word(new_word) {
-        on_new_word(sign.id, new_word)
-    }
-
-    /**
-     * @param {number} index
-     * @param {string} new_word
-     */
-    function handle_updated_word(index, new_word) {
-        on_updated_word(sign.id, sign.words[index].id, new_word)
-    }
-
-    /**
-     * @param {number} index
-     */
-    function handle_deleted_word(index) {
-        on_deleted_word(sign.id, sign.words[index].id)
-    }
+    /** @type {Props} */
+    let {
+        src,
+        poster,
+        words = [],
+        editable = false,
+        highlighted = false,
+        on_word_added,
+        on_word_updated,
+        on_word_deleted,
+        video_actions_left,
+        video_actions_right,
+        actions,
+    } = $props()
 </script>
 
-<tr class="sign-list-item" class:highlighted={sign.highlighted}>
-    <td>
-        <div class="sign-list-item_preview">
-            <Video mime_type={sign.mime_type} url={sign.url}>
-                <VideoActions>
-                    {@render video_actions_right?.()}
-                </VideoActions>
-                <VideoActions location="top-left">
-                    {@render video_actions_left?.()}
-                </VideoActions>
-            </Video>
+<li class={['sign-list-item', { highlighted }]}>
+    <div class="sign-list-item_row">
+        <div class="sign-list-item_video">
+            <VideoPlayer {src} {poster} {video_actions_left} {video_actions_right} />
         </div>
-    </td>
-    <td>
-        <div class="sign-list-item_info">
-            <TagList editable={true}
-                     on_new={handle_new_word}
-                     on_updated={handle_updated_word}
-                     on_deleted={handle_deleted_word}
-                     texts={word_names}
-            />
+        <div class="sign-list-item_words">
+            <TagList tags={words} {editable}
+                     on_added={on_word_added}
+                     on_updated={on_word_updated}
+                     on_deleted={on_word_deleted} />
         </div>
-    </td>
-    <td>
-        <div class="sign-list-item_actions">
-            {#if sign.with_actions}
-                {@render main_actions?.(sign.id)}
-            {/if}
-        </div>
-    </td>
-</tr>
-
+        {#if actions}
+            <div class="sign-list-item_actions">
+                {@render actions()}
+            </div>
+        {/if}
+    </div>
+</li>
 
 <style>
+    .sign-list-item {
+        /* The layout depends on the width of the row, not of the screen. */
+        container-type: inline-size;
+        padding: 1rem;
+        border-bottom: 0.1rem solid var(--card-border);
+    }
+
+    .sign-list-item:last-child {
+        border-bottom: none;
+    }
+
     .sign-list-item.highlighted {
-        background: rgb(250, 224, 224);
+        background-color: rgb(250 224 224);
     }
 
-    .sign-list-item_preview {
-        width: 100%;
-        max-width: 32rem;
-        min-width: 24rem;
+    .sign-list-item_row {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
     }
 
-    .sign-list-item_info {
-        padding: 1rem .5rem;
+    .sign-list-item_video {
+        flex: 0 0 min(40%, 40rem);
+        overflow: hidden;
+        border-radius: 0.8rem;
+    }
+
+    .sign-list-item_words {
+        flex: 1;
         font-size: 1.4rem;
     }
 
     .sign-list-item_actions {
         display: flex;
         flex-direction: column;
-        gap: .5rem;
-        padding: 1rem .5rem;
+        gap: 0.5rem;
+    }
+
+    /* Narrow rows: the video takes the whole width, the words go below. */
+    @container (width < 56rem) {
+        .sign-list-item_row {
+            flex-wrap: wrap;
+        }
+
+        .sign-list-item_video {
+            flex-basis: 100%;
+        }
+
+        .sign-list-item_actions {
+            flex-direction: row;
+        }
     }
 </style>

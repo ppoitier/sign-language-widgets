@@ -53,6 +53,7 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
 
     import VideoOverlay from './video-overlay.svelte'
     import { format_time } from './format-time.js'
+    import { get_fullscreen_element, toggle_fullscreen } from './fullscreen.js'
     import NotFoundIcon from '../icons/not-found-icon.svelte'
     import LoadingIcon from '../icons/loading-icon.svelte'
 
@@ -71,6 +72,7 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
      * @property {import('./video-marker.js').Marker[]} [markers=[]] - Markers shown on the timeline.
      * @property {number} [start_time=0] - Start of the playable range, in seconds.
      * @property {number | undefined} [end_time] - End of the playable range, in seconds. Defaults to the end of the video.
+     * @property {HTMLElement | undefined} [fullscreen_element] - Element put in fullscreen by the fullscreen button. Defaults to the player itself; give a parent to keep fullscreen when the player is swapped with something else.
      */
 
     /** @type {Props} */
@@ -86,7 +88,10 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
         markers = [],
         start_time = 0,
         end_time,
+        fullscreen_element,
     } = $props()
+
+    let is_fullscreen = $derived(fullscreen_element !== undefined && get_fullscreen_element() === fullscreen_element)
 
     /** Duration of the video in seconds (NaN until the metadata is loaded). */
     let duration = $state(NaN)
@@ -223,10 +228,19 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
                             {playback_rate}×
                         </button>
 
-                        <media-fullscreen-button class="control fullscreen-button">
-                            <media-icon name="fullscreen-enter" class="fullscreen-enter-icon"></media-icon>
-                            <media-icon name="fullscreen-exit" class="fullscreen-exit-icon"></media-icon>
-                        </media-fullscreen-button>
+                        {#if fullscreen_element}
+                            <button type="button"
+                                    class="control"
+                                    aria-label={is_fullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+                                    onclick={() => toggle_fullscreen(fullscreen_element)}>
+                                <media-icon name={is_fullscreen ? 'fullscreen-exit' : 'fullscreen-enter'}></media-icon>
+                            </button>
+                        {:else}
+                            <media-fullscreen-button class="control fullscreen-button">
+                                <media-icon name="fullscreen-enter" class="fullscreen-enter-icon"></media-icon>
+                                <media-icon name="fullscreen-exit" class="fullscreen-exit-icon"></media-icon>
+                            </media-fullscreen-button>
+                        {/if}
                     </media-controls-group>
                 </media-controls-content>
             </media-controls>
@@ -265,7 +279,9 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
 
             <media-gesture type="tap" action="togglePaused"></media-gesture>
             <media-hotkey keys="Space" action="togglePaused"></media-hotkey>
-            <media-hotkey keys="f" action="toggleFullscreen"></media-hotkey>
+            {#if !fullscreen_element}
+                <media-hotkey keys="f" action="toggleFullscreen"></media-hotkey>
+            {/if}
             <media-hotkey keys="ArrowLeft" action="seekStep" value="-1"></media-hotkey>
             <media-hotkey keys="ArrowRight" action="seekStep" value="1"></media-hotkey>
             <media-status-announcer></media-status-announcer>

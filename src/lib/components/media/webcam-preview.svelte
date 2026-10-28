@@ -7,7 +7,8 @@ Shows a loading overlay, then an error overlay if the camera is unavailable (per
 
 The stream and the video element are exposed for recording (`MediaRecorder`) or processing (e.g. MediaPipe).
 Children are rendered over the video and mirrored with it, so a canvas drawn in video coordinates
-(e.g. landmarks) stays aligned with the image.
+(e.g. landmarks) stays aligned with the image. The `overlay` snippet is rendered over the video too, but not
+mirrored (for text or buttons); unlike content around the component, it stays visible in fullscreen.
 
 ```svelte
 <WebcamPreview bind:stream bind:video_element>
@@ -24,6 +25,7 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
 
     import VideoOverlay from './video-overlay.svelte'
     import { format_time } from './format-time.js'
+    import { get_fullscreen_element, toggle_fullscreen } from './fullscreen.js'
     import NotFoundIcon from '../icons/not-found-icon.svelte'
     import LoadingIcon from '../icons/loading-icon.svelte'
 
@@ -39,6 +41,8 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
      * @property {Snippet | undefined} [video_actions_left] - Actions added to the top-left corner of the video.
      * @property {Snippet | undefined} [video_actions_right] - Actions added to the top-right corner of the video.
      * @property {Snippet | undefined} [children] - Content rendered over the video (e.g. a canvas), mirrored with it.
+     * @property {Snippet | undefined} [overlay] - Content rendered over the video, not mirrored (e.g. text or buttons).
+     * @property {HTMLElement | undefined} [fullscreen_element] - Element put in fullscreen by the fullscreen button. Defaults to the preview itself; give a parent to keep fullscreen when the preview is swapped with something else.
      */
 
     /** @type {Props} */
@@ -51,6 +55,8 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
         video_actions_left,
         video_actions_right,
         children,
+        overlay,
+        fullscreen_element,
     } = $props()
 
     /** @type {'loading' | 'ready' | 'error'} */
@@ -62,15 +68,8 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
 
     /** @type {HTMLDivElement | undefined} */
     let container = $state()
-    let is_fullscreen = $state(false)
-
-    async function toggle_fullscreen() {
-        if (document.fullscreenElement) {
-            await document.exitFullscreen()
-        } else {
-            await container?.requestFullscreen()
-        }
-    }
+    let fullscreen_target = $derived(fullscreen_element ?? container)
+    let is_fullscreen = $derived(fullscreen_target !== undefined && get_fullscreen_element() === fullscreen_target)
 
     /**
      * @param {unknown} error - Error thrown by `getUserMedia`.
@@ -128,9 +127,7 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
     })
 </script>
 
-<div class="webcam-preview"
-     bind:this={container}
-     onfullscreenchange={() => is_fullscreen = document.fullscreenElement === container}>
+<div class="webcam-preview" bind:this={container}>
     <div class={['webcam-preview_view', { mirrored }]}>
         <video bind:this={video_element}
                bind:currentTime={elapsed_time}
@@ -143,13 +140,19 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
         {/if}
     </div>
 
+    {#if overlay}
+        <div class="webcam-preview_overlay">
+            {@render overlay()}
+        </div>
+    {/if}
+
     {#if status === 'ready'}
         <div class="controls">
             <span class="time">{format_time(elapsed_time)}</span>
             <button type="button"
                     class="control fullscreen-button"
                     aria-label={is_fullscreen ? 'Quitter le plein écran' : 'Plein écran'}
-                    onclick={toggle_fullscreen}>
+                    onclick={() => fullscreen_target && toggle_fullscreen(fullscreen_target)}>
                 <media-icon name={is_fullscreen ? 'fullscreen-exit' : 'fullscreen-enter'}></media-icon>
             </button>
         </div>
@@ -224,6 +227,11 @@ Children are rendered over the video and mirrored with it, so a canvas drawn in 
         inset: 0;
         width: 100%;
         height: 100%;
+    }
+
+    .webcam-preview_overlay {
+        position: absolute;
+        inset: 0;
     }
 
     /* ---- Controls (same look as VideoPlayer) ---- */

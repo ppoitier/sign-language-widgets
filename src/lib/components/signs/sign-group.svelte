@@ -1,126 +1,136 @@
 <!--
 @component
-Collection of signs with a button to switch between grid and list views.
-Also handles the download modal: `on_sign_download` receives the sign id and the chosen file extension.
+Signs shown as a grid of `SignCard`s or a list of `SignListItem`s, with buttons to switch between both (`mode`).
+The action snippets get the sign: write the buttons directly in the app, where the sign is at hand.
 
 ```svelte
-<SignGroup {signs} {on_new_word} {on_updated_word} {on_deleted_word}
-           {on_sign_download} {on_sign_info} {on_hide_sign} {on_add_from_sign} />
+<SignGroup {signs} bind:mode
+           on_word_added={(sign, text) => add_word(sign, text)}
+           on_word_updated={(sign, word_id, text) => rename_word(sign, word_id, text)}
+           on_word_deleted={(sign, word_id) => remove_word(sign, word_id)}>
+    {#snippet video_actions_right(sign)}
+        <VideoAction label="Télécharger" onclick={() => download(sign)}><DownloadIcon /></VideoAction>
+    {/snippet}
+</SignGroup>
 ```
 -->
 
 <script>
-    import SignGrid from './sign-grid.svelte'
+    import CardGrid from '../layout/card-grid.svelte'
+    import SignCard from './sign-card.svelte'
     import SignList from './sign-list.svelte'
-    import ListIcon from '../icons/list-icon.svelte'
+    import SignListItem from './sign-list-item.svelte'
     import GridIcon from '../icons/grid-icon.svelte'
-    import IconButton from '../interaction/icon-button.svelte'
-    import VideoDownloadModal from '../interaction/video-download-modal.svelte'
+    import ListIcon from '../icons/list-icon.svelte'
 
     /**
-     * @typedef {import('../../entities/sign.js').Sign} Sign
-     * @typedef {import('svelte').Snippet} Snippet
+     * @typedef {import('./sign-item.js').SignItem} SignItem
+     * @typedef {import('svelte').Snippet<[SignItem]>} SignSnippet
      *
-     * @typedef {Object} SignGroupProps
-     * @property {Sign[]} signs - Signs that are displayed in the group.
-     * @property {NewWordCallback} on_new_word - Function called when a new word is added to a sign.
-     * @property {UpdatedWordCallback} on_updated_word - Function called when a word of a sign is updated.
-     * @property {DeletedWordCallback} on_deleted_word - Function called when a word of the sign is deleted.
-     * @property {SignDownloadCallback} on_sign_download - Function called when the user wants to download a sign.
-     * @property {SignActionCallback} on_sign_info - Function called when the user wants information about a sign.
-     * @property {SignActionCallback} on_hide_sign - Function called when the user wants to hide a sign.
-     * @property {SignActionCallback} on_add_from_sign - Function called when the user wants to create a new sign from a sign.
-     * @property {'grid' | 'list'} [mode='grid'] - Initial display mode. The user can switch it with the button.
-     * @property {Snippet | undefined} [compact_actions] - Extra actions for each sign in grid mode (bottom-right of the card).
-     * @property {Snippet | undefined} [actions] - Extra actions for each sign in list mode (last column of the row).
+     * @typedef {Object} Props
+     * @property {SignItem[]} signs - Signs of the group.
+     * @property {'grid' | 'list'} [mode='grid'] - Bindable. Display of the signs, switched by the user with the buttons.
+     * @property {(sign: SignItem, text: string) => void} [on_word_added] - Called with the sign and the text of a new word.
+     * @property {(sign: SignItem, word_id: string, text: string) => void} [on_word_updated] - Called with the sign, and the id and new text of an edited word.
+     * @property {(sign: SignItem, word_id: string) => void} [on_word_deleted] - Called with the sign and the id of a deleted word.
+     * @property {SignSnippet | undefined} [video_actions_left] - Actions added to the top-left corner of each video, given the sign.
+     * @property {SignSnippet | undefined} [video_actions_right] - Actions added to the top-right corner of each video, given the sign.
+     * @property {SignSnippet | undefined} [actions] - Actions shown next to the words of each sign, given the sign.
      */
 
-    /**
-     * @callback NewWordCallback
-     * @param {string} sign_id
-     * @param {string} new_word
-     */
-
-    /**
-     * @callback UpdatedWordCallback
-     * @param {string} sign_id
-     * @param {string} word_id
-     * @param {string} new_word
-     */
-
-    /**
-     * @callback DeletedWordCallback
-     * @param {string} sign_id
-     * @param {string} word_id
-     */
-
-    /**
-     * @callback SignDownloadCallback
-     * @param {string} sign_id
-     * @param {string} extension
-     */
-
-    /**
-     * @callback SignActionCallback
-     * @param {string} sign_id
-     */
-
-    /** @type {SignGroupProps} */
+    /** @type {Props} */
     let {
         signs,
-        on_new_word,
-        on_updated_word,
-        on_deleted_word,
-        on_sign_download,
-        on_sign_info,
-        on_hide_sign,
-        on_add_from_sign,
-        mode = 'grid',
-        compact_actions,
+        mode = $bindable('grid'),
+        on_word_added,
+        on_word_updated,
+        on_word_deleted,
+        video_actions_left,
+        video_actions_right,
         actions,
     } = $props()
 
-    let download_modal = $state()
-
-    /**
-     * @param {String} sign_id
-     */
-    function handle_download_button(sign_id) {
-        if (download_modal) {
-            download_modal.open_modal(sign_id)
-        }
-    }
+    // Both have the same props.
+    const Item = $derived(mode === 'grid' ? SignCard : SignListItem)
 </script>
 
-<div class="sign-group">
-    <VideoDownloadModal bind:this={download_modal} on_download={on_sign_download}/>
+{#snippet items()}
+    {#each signs as sign (sign.id)}
+        <!-- Snippets of the sign: the given snippets, applied to it. -->
+        {#snippet sign_video_actions_left()}{@render video_actions_left?.(sign)}{/snippet}
+        {#snippet sign_video_actions_right()}{@render video_actions_right?.(sign)}{/snippet}
+        {#snippet sign_actions()}{@render actions?.(sign)}{/snippet}
 
-    <div class="sign-group_actions">
-        {#if mode === 'list'}
-            <IconButton onclick={() => (mode = 'grid')} label="Switch to grid view.">
-                <GridIcon/>
-            </IconButton>
-        {:else}
-            <IconButton onclick={() => (mode = 'list')} label="Switch to list view.">
-                <ListIcon/>
-            </IconButton>
-        {/if}
+        <Item src={sign.src} poster={sign.poster} words={sign.words}
+              editable={sign.editable} highlighted={sign.highlighted}
+              on_word_added={(text) => on_word_added?.(sign, text)}
+              on_word_updated={(word_id, text) => on_word_updated?.(sign, word_id, text)}
+              on_word_deleted={(word_id) => on_word_deleted?.(sign, word_id)}
+              video_actions_left={video_actions_left && sign_video_actions_left}
+              video_actions_right={video_actions_right && sign_video_actions_right}
+              actions={actions && sign_actions} />
+    {/each}
+{/snippet}
+
+<div class="sign-group">
+    <div class="sign-group_modes">
+        <button type="button" class="mode-button" aria-label="Afficher en grille" title="Afficher en grille"
+                aria-pressed={mode === 'grid'} onclick={() => mode = 'grid'}>
+            <GridIcon />
+        </button>
+        <button type="button" class="mode-button" aria-label="Afficher en liste" title="Afficher en liste"
+                aria-pressed={mode === 'list'} onclick={() => mode = 'list'}>
+            <ListIcon />
+        </button>
     </div>
 
-    {#if mode === 'list'}
-        <SignList {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={handle_download_button} on_info={on_sign_info}
-                  on_hide={on_hide_sign} on_add_from={on_add_from_sign} {actions}/>
+    {#if mode === 'grid'}
+        <CardGrid min_column_width="32rem">
+            {@render items()}
+        </CardGrid>
     {:else}
-        <SignGrid {signs} {on_new_word} {on_updated_word} {on_deleted_word} on_download={handle_download_button} on_info={on_sign_info}
-                  on_hide={on_hide_sign} on_add_from={on_add_from_sign} actions={compact_actions}/>
+        <SignList>
+            {@render items()}
+        </SignList>
     {/if}
 </div>
 
 <style>
-    .sign-group_actions {
-        text-align: right;
+    .sign-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .sign-group_modes {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.4rem;
+    }
+
+    .mode-button {
+        display: grid;
+        place-items: center;
+        padding: 0.4rem;
+        border: 0.1rem solid var(--button-color);
+        border-radius: 0.6rem;
+        background: none;
+        color: var(--button-color);
         font-size: 2.4rem;
-        color: red;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .mode-button:hover {
+        color: var(--active-button-color);
+    }
+
+    .mode-button[aria-pressed='true'] {
+        background-color: var(--button-color);
+        color: white;
+    }
+
+    .mode-button:focus-visible {
+        outline: 0.2rem solid var(--focus-visible-color);
     }
 </style>
-

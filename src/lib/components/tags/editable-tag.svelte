@@ -1,184 +1,142 @@
 <!--
 @component
-Tag whose text can be edited in place.
+Tag whose text can be edited in place: click it (or press Enter) to edit, then Enter or leaving
+the field saves, Escape cancels. Saving an empty text deletes the tag.
+The parent updates `text` in `on_save`. With `validate`, an invalid text can't be saved: Enter shows
+the error, and leaving the field cancels the edit.
 
 ```svelte
-<EditableTag text="hello" on_save={(text) => rename(text)} on_delete={remove} />
+<EditableTag text={word.text} on_save={(text) => rename(word.id, text)} on_delete={() => remove(word.id)} />
 ```
 -->
 
 <script>
-    import {tick} from 'svelte'
-
     /**
-     * Callback function triggered when the tag is saved.
-     * @callback SaveHandler
-     * @param {string} newText The new text content of the tag.
-     * @returns {void}
+     * @typedef {Object} Props
+     * @property {string} text - Text of the tag.
+     * @property {boolean} [editing=false] - If true, the text field is shown (and focused). Bindable: becomes false once the edit is over.
+     * @property {(text: string) => void} on_save - Called with the new text (trimmed) when an edit is saved.
+     * @property {() => void} [on_delete] - Called when an edit is saved with an empty text.
+     * @property {() => void} [on_cancel] - Called when an edit is canceled, or saved without changes.
+     * @property {(text: string) => string | undefined} [validate] - Called with the typed text (trimmed, not empty): returns an error message (in French) if it can't be saved.
      */
 
-    /**
-     * @typedef {Object} EditableTagProps
-     * @property {string} [text='default tag'] - Text content of the tag.
-     * @property {SaveHandler} on_save - Called when the tag is edited and saved.
-     * @property {() => void} [on_cancel] - Called when the editing is canceled.
-     * @property {() => void} [on_delete] - Called when the tag is deleted.
-     */
+    /** @type {Props} */
+    let { text, editing = $bindable(false), on_save, on_delete, on_cancel, validate } = $props()
 
-    /** @type {EditableTagProps} */
-    let {
-        text = 'default tag',
-        on_save,
-        on_cancel,
-        on_delete,
-    } = $props()
+    // Text of the field: follows `text`, and is overridden while typing.
+    let draft = $derived(text)
+    const new_text = $derived(draft.trim())
+    // Saving without changes is always allowed (it cancels the edit).
+    const error_message = $derived(new_text && new_text !== text ? validate?.(new_text) : undefined)
 
-    /** @type {boolean} */
-    let is_editing = $state(false)
-    /** @type {string} */
-    let edit_text = $state(text)
-    /** @type {HTMLInputElement | null} */
-    let input_elem = $state(null)
-
-    // Keep local edit_text in sync if the 'text' prop changes externally
-    $effect(() => {
-        if (!is_editing) {
-            edit_text = text
-        }
-    })
-
-    /**
-     * Function called to resize the input element based on its text value.
-     * The sizing is not accurate as it is based on a uniform character width.
-     */
-    function resize_input() {
-        if (!input_elem)
-            return
-        input_elem.style.width = `calc(${edit_text.length}ch + 1.2em)`
-    }
-
-    /**
-     * Function to start editing the tag.
-     */
     function start_editing() {
-        edit_text = text
-        is_editing = true
-        // Wait for the DOM to update, then focus and select the input
-        tick().then(() => {
-            if (!input_elem) {
-                console.error('Unable to access tag input element.')
-                return
-            }
-            resize_input()
-            input_elem.focus()
-            input_elem.select()
-        })
+        draft = text
+        editing = true
     }
 
-    /**
-     * Function called when the editing is over and the text then saved.
-     */
-    function save_edit() {
-        if (!is_editing)
+    function save() {
+        // The field can also lose focus after an Enter/Escape, once the edit is already over.
+        if (!editing) return
+        if (error_message) {
+            cancel()
             return
+        }
+        editing = false
 
-        const trimmed_text = edit_text.trim()
-        if (trimmed_text.length < 1) {
+        if (!new_text) {
             on_delete?.()
-        } else if (trimmed_text !== text) {
-            on_save(trimmed_text)
-            // Note: We don't update 'text' directly here; the parent should update the prop
+        } else if (new_text !== text) {
+            on_save(new_text)
         } else {
             on_cancel?.()
         }
-        is_editing = false
     }
 
-    /**
-     * Function called when the editing is canceled.
-     */
-    function cancel_edit() {
-        is_editing = false
+    function cancel() {
+        editing = false
+        draft = text
         on_cancel?.()
     }
 
-    /**
-     * Function called when a key is pressed while editing.
-     * @param {KeyboardEvent} event
-     */
+    /** @param {KeyboardEvent & { currentTarget: HTMLInputElement }} event */
     function handle_keydown(event) {
-        resize_input()
         if (event.key === 'Enter') {
             event.preventDefault()
-            save_edit()
+            if (error_message) {
+                // Shows the browser's validation bubble with the error.
+                event.currentTarget.reportValidity()
+            } else {
+                save()
+            }
         } else if (event.key === 'Escape') {
-            cancel_edit()
+            cancel()
         }
     }
 
-    // noinspection JSUnusedGlobalSymbols
-    /**
-     * Explicit function to focus and edit the tag.
-     */
-    export function focus() {
-        start_editing()
+    /** @param {HTMLInputElement} input */
+    function focus_and_select(input) {
+        input.focus()
+        input.select()
+    }
+
+    /** @param {HTMLInputElement} input */
+    function sync_validity(input) {
+        // Re-run when `error_message` changes: the field is `:invalid` while there is an error.
+        input.setCustomValidity(error_message ?? '')
     }
 </script>
 
-{#if is_editing}
-    <input
-            type="text"
-            class="tag-input"
-            bind:value={edit_text}
-            bind:this={input_elem}
-            onkeydown={handle_keydown}
-            onblur={save_edit}
-            aria-label="Edit tag name"
-    />
+{#if editing}
+    <input type="text"
+           class="tag-input"
+           size={Math.max(draft.length, 4)}
+           aria-label="Modifier le texte"
+           bind:value={draft}
+           onkeydown={handle_keydown}
+           onblur={save}
+           {@attach focus_and_select}
+           {@attach sync_validity} />
 {:else}
-    <span
-            class="tag"
-            onclick={start_editing}
-            role="button"
-            tabindex="0"
-            onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') start_editing() }}
-            title="Click or press Enter to edit"
-    >
+    <button type="button" class="tag" title="Cliquer pour modifier" onclick={start_editing}>
         {text}
-    </span>
+    </button>
 {/if}
 
 <style>
     .tag {
         display: inline-block;
-        padding: .2em .6em;
+        padding: 0.2em 0.6em;
+        border: none;
         border-radius: 0.4em;
         background-color: var(--tag-color);
         color: white;
+        font: inherit;
         cursor: pointer;
-        user-select: none;
         transition: background-color 0.2s ease;
     }
 
-    .tag:hover,
-    .tag:focus {
+    .tag:hover {
         background-color: var(--active-tag-color);
-        outline: none; /* Remove default focus outline */
     }
 
     .tag:focus-visible {
-        outline: .1em solid red;
+        outline: 0.1em solid var(--focus-visible-color);
     }
 
     .tag-input {
         display: inline-block;
-        padding: calc(.2em - 1px) calc(.6em - 1px);
-        border-radius: 0.4em;
+        /* Same size as the tag: its padding minus the border. */
+        padding: calc(0.2em - 1px) calc(0.6em - 1px);
         border: 1px solid var(--active-tag-color);
-        font: inherit;
-        line-height: inherit;
+        border-radius: 0.4em;
         background-color: white;
         color: black;
-        min-width: 5ch;
+        font: inherit;
+    }
+
+    .tag-input:invalid {
+        border-color: #c92a2a;
+        outline-color: #c92a2a;
     }
 </style>
