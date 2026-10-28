@@ -10,7 +10,7 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 ## Layout
 
 - `src/lib/` — the published library (only `dist`, built from it, is shipped). Entry point: `src/lib/index.js`; also `global.css`.
-- `src/lib/components/` — library components (e.g. `annotations/AnnotationTimeline.svelte`, `timeline-utils.js` holds shared typedefs)
+- `src/lib/components/` — library components (e.g. `annotations/annotation-timeline.svelte`, `timeline-utils.js` holds shared typedefs)
 - `src/lib/services/` — non-UI logic used by the components (see Architecture)
 - `src/demo/`, `src/app.svelte`, `src/app.js` — demo app, NOT part of the package. Demos import from `../lib/...`.
 - `public/` — demo-only static assets (sample video, annotations JSON)
@@ -22,7 +22,7 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 - **Use the Svelte MCP server** when writing or editing Svelte code: look up docs with `get-documentation` / `list-sections`, and run `svelte-autofixer` on every component before finishing (re-run after fixes).
 - **Keep code simple.** No speculative abstractions. Use `async/await` when it makes the code clearer.
 - **JavaScript + JSDoc, no TypeScript files.** `jsconfig.json` has `checkJs: true`, so annotate props, state, functions and fetched data with JSDoc (`@typedef`, `@type`, `@param`, `@returns`) to avoid IDE type errors. Reuse typedefs via `import('...').Type`.
-- **Naming: use `snake_case` whenever possible** (props, callbacks like `on_new_word`, state, functions, new file names in kebab-case). Existing code is inconsistent (the annotation components use PascalCase file names and `camelCase` props such as `onFinished`, `currentTime`); unify it to `snake_case` when reworking a component, and update its usages (demos, `index.js`).
+- **Naming: use `snake_case` whenever possible** (props, callbacks like `on_new_word`, state, functions, new file names in kebab-case). When renaming a prop or file, update its usages (demos, `index.js`).
 - Indentation: 4 spaces in `.svelte` files, no semicolons.
 - UI strings are in French.
 
@@ -91,6 +91,14 @@ Svelte 5 component library (sign language widgets: annotation timeline, video re
 - `media/video-download-dialog.svelte` (`VideoDownloadDialog`): modal `<dialog>` to choose a format (gif, webp, mp4, webm), bindable `open`, `on_download(format)`. Not part of `SignGroup`: the app opens it from its download button and remembers the sign.
 - Demos `sign-card-demo`, `sign-list-demo` and `sign-group-demo` share their data and word helpers from `demo/sample-signs.js`.
 - Layout: `layout/card-grid.svelte` (`CardGrid`): responsive grid, 1 column on phones up to `max_columns`; cards keep their own height (`align-items: start`).
+
+## Annotation timeline (`src/lib/components/annotations/`)
+
+- `annotation-timeline.svelte` (`AnnotationTimeline`, the only exported one): `timeline-overview.svelte` (full duration + `timeline-brush.svelte`) above one `annotation-tier.svelte` per tier (bars are `annotation.svelte`, playhead `playhead.svelte`). Props: `duration`, `tiers`, bindable `current_time`, `follow_playback`, sizing props, callbacks `on_annotation_click`, `on_seek`, `on_selection_change`.
+- `selected_range` (the brushed range) is a writable `$derived`: reset when `duration` / `max_selection_span` change, reassigned by the brush, tier drags and the `follow_playback` effect (its "state assigned in `$effect`" autofixer suggestion is expected).
+- `annotation.svelte` fits its label by measuring in a separate hidden `<text>`: never set `textContent` on an element whose content Svelte renders.
+- Typedefs (`Annotation`, `Tier`, `SeekEvent`, `LinearScale`) and helpers in `timeline-utils.js`.
+- Demo `demo/annotation-timeline-demo.svelte`: a `VideoPlayer` of the sample video and the timeline share one `current_time` state (both bindable, in seconds), so each follows the other; clicking an annotation seeks to its start. The timeline's `duration` comes from the last annotation's end (`VideoPlayer` doesn't expose the video's duration).
 
 ## Services (`src/lib/services/`)
 

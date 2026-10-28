@@ -32,7 +32,7 @@
 export const DEFAULT_COLOR_PALETTE = [
     '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f',
     '#edc949', '#af7aa1', '#ff9da7', '#9c755f', '#bab0ab',
-];
+]
 
 /**
  * @param {number} value
@@ -40,12 +40,12 @@ export const DEFAULT_COLOR_PALETTE = [
  * @param {number} max
  */
 export function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
+    return Math.max(min, Math.min(max, value))
 }
 
 /**
  * Clamp a [start, end] range to fit within [0, duration] and have a span
- * within [minSpan, maxSpan]. The `anchor` determines which edge stays fixed
+ * within [min_span, max_span]. The `anchor` determines which edge stays fixed
  * if the span has to shrink to fit the cap:
  *   - 'start': keep start, pull end in.
  *   - 'end':   keep end, push start out.
@@ -53,43 +53,43 @@ export function clamp(value, min, max) {
  *
  * @param {[number, number]} range
  * @param {number} duration
- * @param {number} minSpan
- * @param {number} maxSpan
+ * @param {number} min_span
+ * @param {number} max_span
  * @param {'start' | 'end' | 'both'} [anchor]
  * @returns {[number, number]}
  */
-export function clampRangeSpan(range, duration, minSpan, maxSpan, anchor = 'both') {
-    let [start, end] = range;
+export function clamp_range_span(range, duration, min_span, max_span, anchor = 'both') {
+    let [start, end] = range
     // Order, then clamp absolute bounds.
-    if (end < start) [start, end] = [end, start];
-    start = clamp(start, 0, duration);
-    end = clamp(end, 0, duration);
+    if (end < start) [start, end] = [end, start]
+    start = clamp(start, 0, duration)
+    end = clamp(end, 0, duration)
 
-    let span = end - start;
-    const cappedSpan = clamp(span, minSpan, maxSpan);
+    const span = end - start
+    const capped_span = clamp(span, min_span, max_span)
 
-    if (cappedSpan !== span) {
+    if (capped_span !== span) {
         if (anchor === 'start') {
-            end = clamp(start + cappedSpan, 0, duration);
-            start = end - cappedSpan; // ensure exact span if we hit the right wall
+            end = clamp(start + capped_span, 0, duration)
+            start = end - capped_span // ensure exact span if we hit the right wall
         } else if (anchor === 'end') {
-            start = clamp(end - cappedSpan, 0, duration);
-            end = start + cappedSpan;
+            start = clamp(end - capped_span, 0, duration)
+            end = start + capped_span
         } else {
-            const center = (start + end) / 2;
-            start = clamp(center - cappedSpan / 2, 0, duration - cappedSpan);
-            end = start + cappedSpan;
+            const center = (start + end) / 2
+            start = clamp(center - capped_span / 2, 0, duration - capped_span)
+            end = start + capped_span
         }
     }
-    return [start, end];
+    return [start, end]
 }
 
 /**
  * @param {Annotation} annotation
  * @returns {string | number}
  */
-export function getAnnotationKey(annotation) {
-    return annotation.id ?? `${annotation.start}-${annotation.end}-${annotation.label}`;
+export function get_annotation_key(annotation) {
+    return annotation.id ?? `${annotation.start}-${annotation.end}-${annotation.label}`
 }
 
 /**
@@ -98,16 +98,15 @@ export function getAnnotationKey(annotation) {
  * @param {[number, number]} range
  * @returns {LinearScale}
  */
-export function createLinearScale(domain, range) {
-    const [d0, d1] = domain;
-    const [r0, r1] = range;
-    const scale = /** @type {LinearScale} */ (
+export function create_linear_scale(domain, range) {
+    const [d0, d1] = domain
+    const [r0, r1] = range
+    return /** @type {LinearScale} */ (
         Object.assign(
             (/** @type {number} */ value) => r0 + ((value - d0) * (r1 - r0)) / (d1 - d0),
             { invert: (/** @type {number} */ pixel) => d0 + ((pixel - r0) * (d1 - d0)) / (r1 - r0) },
         )
-    );
-    return scale;
+    )
 }
 
 /**
@@ -118,7 +117,7 @@ export function createLinearScale(domain, range) {
  * @param {string[]} [palette]
  * @returns {(label: string) => string}
  */
-export function buildColorForLabel(labels, palette = DEFAULT_COLOR_PALETTE) {
-    const unique = [...new Set(labels)];
-    return (label) => palette[unique.indexOf(label) % palette.length];
+export function build_color_for_label(labels, palette = DEFAULT_COLOR_PALETTE) {
+    const unique = [...new Set(labels)]
+    return (label) => palette[unique.indexOf(label) % palette.length]
 }

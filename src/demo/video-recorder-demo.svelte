@@ -12,7 +12,7 @@
     <MediaCard highlighted={status === 'recording'}>
         {#snippet media()}
             <VideoRecorder bind:status
-                           recording_constraints={{ frameRate: 15 }}
+                           recording_constraints={{ frameRate: 25 }}
                            on_recorded={blob => recording = blob}
                            on_error={error => console.error(error)} />
         {/snippet}

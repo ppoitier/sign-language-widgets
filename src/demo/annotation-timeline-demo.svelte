@@ -1,7 +1,8 @@
 <script>
     import { v4 as uuid_v4 } from 'uuid'
 
-    import AnnotationTimeline from '../lib/components/annotations/AnnotationTimeline.svelte'
+    import AnnotationTimeline from '../lib/components/annotations/annotation-timeline.svelte'
+    import VideoPlayer from '../lib/components/media/video-player.svelte'
 
     /**
      * @typedef {import('../lib/components/annotations/timeline-utils.js').Annotation} Annotation
@@ -9,18 +10,20 @@
      * @typedef {{ start_ms: number, end_ms: number, gloss: string }} RawAnnotation
      */
 
+    const VIDEO_URL = `${import.meta.env.BASE_URL}continuous-sample/CLSFBI0110A_S002_B.mp4`
     // @ts-ignore
     const ANNOTATIONS_URL = `${import.meta.env.BASE_URL}continuous-sample/annotations.json`
 
     // Only these tiers are displayed, in this order.
     /** @type {Record<string, string>} */
     const TIER_NAMES = {
-        left_hand: 'Left Hand',
-        right_hand: 'Right Hand',
-        both_hands: 'Both Hands',
+        left_hand: 'Main gauche',
+        right_hand: 'Main droite',
+        both_hands: 'Deux mains',
     }
 
-    let currentTime = $state(0)
+    // Shared by the video and the timeline: each one follows the other.
+    let current_time = $state(0)
     /** @type {Tier[]} */
     let tiers = $state([])
     /** @type {Error | null} */
@@ -48,7 +51,7 @@
     async function load_tiers(signal) {
         const response = await fetch(ANNOTATIONS_URL, { signal })
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status} while loading ${ANNOTATIONS_URL}`)
+            throw new Error(`HTTP ${response.status} lors du chargement de ${ANNOTATIONS_URL}`)
         }
         /** @type {Record<string, RawAnnotation[]>} */
         const data = await response.json()
@@ -73,16 +76,30 @@
     })
 </script>
 
-{#if error}
-    <p>Failed to load annotations: {error.message}</p>
-{:else if tiers.length === 0}
-    <p>Loading annotations…</p>
-{:else}
-    <AnnotationTimeline
-        {duration}
-        {tiers}
-        bind:currentTime
-        onAnnotationClick={(a) => console.log('clicked', a)}
-        onSeek={({ time }) => console.log('seek', time)}
-    />
-{/if}
+<div class="demo">
+    <VideoPlayer src={VIDEO_URL} autoplay={false} bind:current_time />
+
+    {#if error}
+        <p>Impossible de charger les annotations : {error.message}</p>
+    {:else if tiers.length === 0}
+        <p>Chargement des annotations…</p>
+    {:else}
+        <!-- Clicking an annotation jumps the video to its start. -->
+        <AnnotationTimeline
+            {duration}
+            {tiers}
+            bind:current_time
+            on_annotation_click={(a) => current_time = a.start}
+        />
+    {/if}
+</div>
+
+<style>
+    .demo {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        /* Width of the timeline (its default `width`). */
+        width: 800px;
+    }
+</style>

@@ -37,5 +37,5 @@ export {default as AddVideoIcon} from './components/icons/add-video-icon.svelte'
 
 export {default as MultiSelectField} from './components/interaction/multi-select-field.svelte'
 
-export {default as AnnotationTimeline} from './components/annotations/AnnotationTimeline.svelte'
+export {default as AnnotationTimeline} from './components/annotations/annotation-timeline.svelte'
 
