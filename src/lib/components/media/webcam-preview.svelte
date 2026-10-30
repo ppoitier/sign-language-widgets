@@ -41,7 +41,7 @@ mirrored (for text or buttons); unlike content around the component, it stays vi
      * @property {Snippet | undefined} [video_actions_left] - Actions added to the top-left corner of the video.
      * @property {Snippet | undefined} [video_actions_right] - Actions added to the top-right corner of the video.
      * @property {Snippet | undefined} [children] - Content rendered over the video (e.g. a canvas), mirrored with it.
-     * @property {Snippet | undefined} [overlay] - Content rendered over the video, not mirrored (e.g. text or buttons).
+     * @property {Snippet | undefined} [overlay] - Content rendered over the video, not mirrored (e.g. text or buttons). A `VideoOverlay` given here covers the webcam's own loading/error overlays.
      * @property {HTMLElement | undefined} [fullscreen_element] - Element put in fullscreen by the fullscreen button. Defaults to the preview itself; give a parent to keep fullscreen when the preview is swapped with something else.
      */
 
@@ -140,12 +140,6 @@ mirrored (for text or buttons); unlike content around the component, it stays vi
         {/if}
     </div>
 
-    {#if overlay}
-        <div class="webcam-preview_overlay">
-            {@render overlay()}
-        </div>
-    {/if}
-
     {#if status === 'ready'}
         <div class="controls">
             <span class="time">{format_time(elapsed_time)}</span>
@@ -176,6 +170,13 @@ mirrored (for text or buttons); unlike content around the component, it stays vi
                 <h3>{error_message}</h3>
             {/snippet}
         </VideoOverlay>
+    {/if}
+
+    <!-- After the loading/error overlays, so an overlay given by the app (e.g. a model loading) stays above them. -->
+    {#if overlay}
+        <div class="webcam-preview_overlay">
+            {@render overlay()}
+        </div>
     {/if}
 
     {#if video_actions_left}

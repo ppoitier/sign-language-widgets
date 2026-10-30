@@ -8,6 +8,8 @@
     import VideoRecorderDemo from './demo/video-recorder-demo.svelte'
     import VideoImporterDemo from './demo/video-importer-demo.svelte'
     import AnnotationTimelineDemo from './demo/annotation-timeline-demo.svelte'
+    import HolisticLandmarkerDemo from './demo/holistic-landmarker-demo.svelte'
+    import HolisticExtractionDemo from './demo/holistic-extraction-demo.svelte'
 
     /**
      * @typedef {Object} Demo
@@ -26,6 +28,8 @@
         'video-recorder': { title: 'Enregistreur vidéo', component: VideoRecorderDemo },
         'video-importer': { title: 'Import de vidéo', component: VideoImporterDemo },
         'annotation-timeline': { title: "Timeline d'annotations", component: AnnotationTimelineDemo },
+        'holistic-landmarker': { title: 'Landmarks holistiques', component: HolisticLandmarkerDemo },
+        'holistic-extraction': { title: 'Extraction de landmarks', component: HolisticExtractionDemo },
     }
     const default_demo = 'card-grid'
 

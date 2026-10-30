@@ -33,6 +33,13 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
 ```svelte
 <VideoPlayer src={video.url} markers={[{ start: 10 }, { start: 15, end: 20, color: 'red' }]} />
 ```
+
+Process the frames (e.g. MediaPipe) and draw over the video: children are rendered over it, under the controls.
+```svelte
+<VideoPlayer src={video.url} bind:video_element>
+    <canvas bind:this={landmarks_canvas}></canvas>
+</VideoPlayer>
+```
 -->
 
 <script>
@@ -73,11 +80,15 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
      * @property {number} [start_time=0] - Start of the playable range, in seconds.
      * @property {number | undefined} [end_time] - End of the playable range, in seconds. Defaults to the end of the video.
      * @property {HTMLElement | undefined} [fullscreen_element] - Element put in fullscreen by the fullscreen button. Defaults to the player itself; give a parent to keep fullscreen when the player is swapped with something else.
+     * @property {HTMLVideoElement | undefined} [video_element] - Bindable. The `<video>` element (e.g. to process its frames).
+     * @property {Snippet | undefined} [children] - Content rendered over the video, under the controls (e.g. a canvas). It doesn't receive clicks.
      */
 
     /** @type {Props} */
     let {
         src,
+        video_element = $bindable(),
+        children,
         poster,
         autoplay = true,
         loop = true,
@@ -166,6 +177,7 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
     <video-player>
         <media-container class="video-player">
             <video {src} {poster} {autoplay} {loop} muted playsinline preload="metadata"
+                   bind:this={video_element}
                    bind:currentTime={current_time}
                    bind:duration
                    bind:playbackRate={playback_rate}
@@ -173,6 +185,12 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
                    onplay={restart_at_range_end}
                    onloadedmetadata={() => loaded_src = src}
                    onerror={() => failed_src = src}></video>
+
+            {#if children}
+                <div class="video-player_layer">
+                    {@render children()}
+                </div>
+            {/if}
 
             <!-- Shown when the playback stalls after the initial loading. -->
             <media-buffering-indicator class="buffering">
@@ -311,6 +329,21 @@ Markers: a point at 10 s and a red range from 15 s to 20 s:
         width: 100%;
         height: 100%;
         object-fit: contain;
+    }
+
+    /* Clicks go through, to the play/pause gesture. */
+    .video-player_layer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+
+    /* Let a canvas (or any child) fill the layer by default. */
+    .video-player_layer > :global(*) {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
     }
 
     /* ---- Controls ---- */
