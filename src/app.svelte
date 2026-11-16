@@ -1,128 +1,72 @@
 <script>
-    import SignGroup from './components/signs/sign-group.svelte'
-    import {Sign} from './entities/sign.js'
-    import VideoRecording from './components/interaction/video-recording.svelte'
-    import MultiSelectField from './components/interaction/multi-select-field.svelte'
-
-    const data = [
-        new Sign({
-            id: '1',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: true,
-            with_actions: true,
-            highlighted: true,
-        }),
-        new Sign({
-            id: '2',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: true,
-        }),
-        new Sign({
-            id: '3',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: false,
-        }),
-        new Sign({
-            id: '4',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: false,
-        }),
-        new Sign({
-            id: '5',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: true,
-        }),
-        new Sign({
-            id: '6',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: false,
-            with_actions: true,
-        }),
-        new Sign({
-            id: '7',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: false,
-        }),
-        new Sign({
-            id: '8',
-            url: 'https://give-me-a-sign.ppoitier.com/static/videos/corpus_lsfb/signe_943ee9e5edd9fd578c3ec7fcb544d25f.webm',
-            mime_type: 'video/webm',
-            words: [{id: '1', word: 'voiture'}, {id: '2', word: 'automobile'}, {id: '3', word: 'auto'}],
-            editable: true,
-        }),
-    ]
+    import CardGridDemo from './demo/card-grid-demo.svelte'
+    import SignCardDemo from './demo/sign-card-demo.svelte'
+    import SignListDemo from './demo/sign-list-demo.svelte'
+    import SignGroupDemo from './demo/sign-group-demo.svelte'
+    import VideoCardDemo from './demo/video-card-demo.svelte'
+    import WebcamDemo from './demo/webcam-demo.svelte'
+    import VideoRecorderDemo from './demo/video-recorder-demo.svelte'
+    import VideoImporterDemo from './demo/video-importer-demo.svelte'
+    import AnnotationTimelineDemo from './demo/annotation-timeline-demo.svelte'
+    import HolisticLandmarkerDemo from './demo/holistic-landmarker-demo.svelte'
+    import HolisticExtractionDemo from './demo/holistic-extraction-demo.svelte'
 
     /**
-     * @param {string} sign_id
+     * @typedef {Object} Demo
+     * @property {string} title - Title shown in the navigation.
+     * @property {import('svelte').Component} component - Component of the demo.
      */
-    function test_handler(sign_id) {
-        console.log('test handler', sign_id)
-    }
 
-    let options = $state([
-        {id: '1', name: 'Option 1', selected: false},
-        {id: '2', name: 'Option 1', selected: false},
-        {id: '3', name: 'Option 1', selected: false},
-        {id: '4', name: 'Option 1', selected: false},
-        {id: '5', name: 'Option 1', selected: false},
-        {id: '6', name: 'Option 1', selected: false},
-        {id: '7', name: 'Option 1', selected: false},
-        {id: '8', name: 'Option 1', selected: false},
-        {id: '9', name: 'Option 1', selected: false},
-        {id: '10', name: 'Option 1', selected: false},
-        {id: '11', name: 'Option 1', selected: false},
-        {id: '12', name: 'Option 1', selected: false},
-        {id: '13', name: 'Option 1', selected: false},
-        {id: '14', name: 'Option 1', selected: false},
-        {id: '15', name: 'Option 1', selected: false},
-        {id: '16', name: 'Option 1', selected: false},
-    ])
+    /** @type {Record<string, Demo>} */
+    const demos = {
+        'card-grid': { title: 'Grille de cartes', component: CardGridDemo },
+        'sign-card': { title: 'Carte de signe', component: SignCardDemo },
+        'sign-list': { title: 'Liste de signes', component: SignListDemo },
+        'sign-group': { title: 'Groupe de signes', component: SignGroupDemo },
+        'video-card': { title: 'Carte vidéo', component: VideoCardDemo },
+        'webcam': { title: 'Webcam', component: WebcamDemo },
+        'video-recorder': { title: 'Enregistreur vidéo', component: VideoRecorderDemo },
+        'video-importer': { title: 'Import de vidéo', component: VideoImporterDemo },
+        'annotation-timeline': { title: "Timeline d'annotations", component: AnnotationTimelineDemo },
+        'holistic-landmarker': { title: 'Landmarks holistiques', component: HolisticLandmarkerDemo },
+        'holistic-extraction': { title: 'Extraction de landmarks', component: HolisticExtractionDemo },
+    }
+    const default_demo = 'card-grid'
+
+    // The demo is chosen by the URL hash (e.g. `#video-recorder`), so it can be reloaded and shared.
+    let hash = $state(location.hash.slice(1))
+    const current_id = $derived(hash in demos ? hash : default_demo)
+    const demo = $derived(demos[current_id])
 </script>
 
+<svelte:window onhashchange={() => hash = location.hash.slice(1)} />
+
+<nav>
+    {#each Object.entries(demos) as [id, { title }] (id)}
+        <a href="#{id}" aria-current={id === current_id ? 'page' : undefined}>{title}</a>
+    {/each}
+</nav>
+
 <main>
-    <!--{#snippet test(sign_id)}-->
-    <!--    <div>-->
-    <!--        <button onclick={() => test_handler(sign_id)}>1</button>-->
-    <!--        <button onclick={() => test_handler(sign_id)}>2</button>-->
-    <!--    </div>-->
-    <!--{/snippet}-->
-
-    <!--<SignGroup on_new_word={(sign_id, new_word) => console.log('new word', sign_id, new_word)}-->
-    <!--           on_updated_word={(sign_id, word_index, new_word) => console.log('updated word', sign_id, word_index, new_word)}-->
-    <!--           signs={data}-->
-    <!--           on_sign_info={(sign_id) => (console.log("Ask information about " + sign_id))}-->
-    <!--           on_sign_download={(sign_id, extension) => (console.log("Wants to download sign " + sign_id + '.' + extension))}-->
-    <!--           on_deleted_word={() => {}}-->
-    <!--           on_hide_sign={() => {}}-->
-    <!--           on_add_from_sign={() => {}}-->
-    <!--           actions={test}-->
-    <!--           compact_actions={test}-->
-    <!--/>-->
-
-    <VideoRecording on_recorded={() => {}} />
-
-    <MultiSelectField options={options} />
-
+    <demo.component />
 </main>
 
 <style>
-    main {
-        padding: 5rem;
-        margin: auto;
-        max-width: 130rem;
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        padding: 1rem 2rem;
+        border-bottom: 0.1rem solid var(--card-border);
+    }
+
+    a {
+        color: var(--button-color);
+        text-decoration: none;
+    }
+
+    a[aria-current='page'] {
+        font-weight: 700;
+        text-decoration: underline;
     }
 </style>

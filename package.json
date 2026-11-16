@@ -1,38 +1,55 @@
 {
   "name": "sign-language-widgets",
-  "version": "1.0.27",
+  "version": "3.0.0",
+  "description": "Svelte 5 components for sign language apps: video player, webcam recorder, sign cards and lists, annotation timeline.",
+  "keywords": [
+    "svelte",
+    "sign-language",
+    "lsfb",
+    "video",
+    "webcam",
+    "annotation"
+  ],
+  "license": "MIT",
+  "author": "Pierre Poitier",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ppoitier/sign-language-widgets.git"
+  },
   "type": "module",
   "files": [
-    "src",
-    "package.json",
-    "README.md"
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
   ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "svelte": "./src/index.js"
+      "svelte": "./dist/index.js"
     },
     "./package.json": "./package.json",
-    "./global.css": "./src/global.css"
+    "./global.css": "./dist/global.css",
+    "./base.css": "./dist/base.css"
   },
-  "svelte": "./src/index.js",
+  "svelte": "./dist/index.js",
   "scripts": {
     "dev": "vite",
     "build": "svelte-package",
-    "preview": "vite preview",
-    "build:types": "tsc --project tsconfig.json"
+    "preview": "vite preview"
   },
   "peerDependencies": {
-    "svelte": "^5.25.6"
+    "svelte": "^5.57.0"
   },
   "devDependencies": {
-    "@sveltejs/package": "^2.3.11",
-    "@sveltejs/vite-plugin-svelte": "^5.1.0",
-    "svelte": "^5.34.1",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "@sveltejs/package": "^3.0.2",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.57.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
   },
   "dependencies": {
-    "video.js": "^8.23.3"
+    "@mediapipe/tasks-vision": "1.2.3",
+    "@videojs/html": "10.4.0"
   }
 }

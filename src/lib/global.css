@@ -1,0 +1,36 @@
+/*
+Required by the components: import it once in the app (`import 'sign-language-widgets/global.css'`).
+- `font-size: 62.5%` on the root: the components are sized in rem, with 1rem = 10px.
+- `box-sizing: border-box`: the components' widths include their padding and border.
+- The CSS variables (colors, card sizes...): override them in the app to change the theme.
+The font and the margin/padding reset are optional, in `base.css`.
+*/
+
+:root {
+    font-size: 62.5%;
+
+    --focus-visible-color: red;
+
+    --tag-color: #2c3e50;
+    --active-tag-color: #3d5671;
+    --button-color: #2c3e50;
+    --active-button-color: #3d5671;
+    --progress-bar-color: rgba(1, 178, 175, 1.0);
+
+    --card-min-width: 12rem;
+    --card-max-width: 50rem;
+    --card-background: #f4f0f0;
+    --card-border: #8c8c8c;
+
+    --field-border: 1px solid #dee2e6;
+    --field-background: #ffffff;
+    --field-active-background: #d8d8d8;
+
+    --active-action-color: rgba(1, 178, 175, 1.0);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}

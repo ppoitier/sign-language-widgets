@@ -1,0 +1,64 @@
+<!--
+@component
+Card with a 16:9 video (see `VideoPlayer`) on top and free content below.
+Shortcut for a `MediaCard` holding a `VideoPlayer`.
+
+```svelte
+<VideoCard src={video.url} highlighted={is_selected}>
+    {#snippet video_actions_right()}
+        <VideoAction label="Télécharger" onclick={download}><DownloadIcon /></VideoAction>
+    {/snippet}
+    <h3>{video.title}</h3>
+</VideoCard>
+```
+-->
+
+<script>
+    import MediaCard from './media-card.svelte'
+    import VideoPlayer from './video-player.svelte'
+
+    /**
+     * @typedef {import('svelte').Snippet} Snippet
+     *
+     * @typedef {Object} Props
+     * @property {string} src - URL of the video.
+     * @property {string | undefined} [poster] - URL of an image displayed before the video plays.
+     * @property {boolean} [autoplay=true] - If true, play the video when loading.
+     * @property {boolean} [loop=true] - If true, loop the playback of the video.
+     * @property {boolean} [fluid=false] - If true, the card doesn't have a maximum width anymore.
+     * @property {boolean} [highlighted=false] - If true, the card is outlined.
+     * @property {Snippet | undefined} [video_actions_left] - Actions added to the top-left corner of the video.
+     * @property {Snippet | undefined} [video_actions_right] - Actions added to the top-right corner of the video.
+     * @property {Snippet | undefined} [error] - Message shown when the video cannot be played. Defaults to "Vidéo non disponible !".
+     * @property {number} [current_time=0] - Playback position in seconds. Bindable: follows the playback, and setting it jumps to that time.
+     * @property {import('./video-marker.js').Marker[]} [markers=[]] - Markers shown on the timeline (see `VideoPlayer`).
+     * @property {number} [start_time=0] - Start of the playable range, in seconds.
+     * @property {number | undefined} [end_time] - End of the playable range, in seconds. Defaults to the end of the video.
+     * @property {Snippet | undefined} [children] - Content of the card, below the video.
+     */
+
+    /** @type {Props} */
+    let {
+        src,
+        poster,
+        autoplay = true,
+        loop = true,
+        fluid = false,
+        highlighted = false,
+        video_actions_left,
+        video_actions_right,
+        error,
+        current_time = $bindable(0),
+        markers = [],
+        start_time = 0,
+        end_time,
+        children,
+    } = $props()
+</script>
+
+<MediaCard {fluid} {highlighted} {children}>
+    {#snippet media()}
+        <VideoPlayer {src} {poster} {autoplay} {loop} {video_actions_left} {video_actions_right} {error}
+                     {markers} {start_time} {end_time} bind:current_time />
+    {/snippet}
+</MediaCard>
